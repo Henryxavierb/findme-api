@@ -14,35 +14,34 @@ module.exports = {
       where: { email: email.toLowerCase() },
     });
 
-    if (!alreadyRegistered) {
-      const id = crypto.randomBytes(5).toString("hex");
-      const cryptographedPassword = bcrypt.hashSync(password, 10);
-
-      const newUser = await Users.create({
-        id,
-        name,
-        email: email.toLowerCase(),
-        password: cryptographedPassword,
-      });
-
-      const token = generateToken({ id: newUser.id });
-
+    if (alreadyRegistered) {
       return response.json({
-        token,
-        message: "User successfully registred",
-        user: {
-          name,
-          email,
-          id: newUser.id,
-          photo: newUser.photo,
-          profile: newUser.profile,
-        },
+        validation: "Este email já está cadastrado.",
+        field: "email",
       });
     }
 
+    const id = crypto.randomBytes(5).toString("hex");
+    const cryptographedPassword = bcrypt.hashSync(password, 10);
+
+    const newUser = await Users.create({
+      id,
+      name,
+      email,
+      password: cryptographedPassword,
+    });
+
+    const token = generateToken({ id: newUser.id });
+
     return response.json({
-      validation: "User already registered",
-      field: ["email"],
+      token,
+      user: {
+        name,
+        email,
+        id: newUser.id,
+        photo: newUser.photo,
+        profile: newUser.profile,
+      },
     });
   },
 
@@ -53,36 +52,32 @@ module.exports = {
       where: { email: email.toLowerCase() },
     });
 
-    if (emailRegistered) {
-      const samePassword = bcrypt.compareSync(
-        password,
-        emailRegistered.password
-      );
+    if (!emailRegistered) {
+      return response.json({ validation: "Email inexistente", field: "email" });
+    }
 
-      if (samePassword) {
-        // Pass ID in params describre how compare differents tokens
-        const token = generateToken({ id: emailRegistered.id });
+    const samePassword = bcrypt.compareSync(password, emailRegistered.password);
 
-        return response.status(200).json({
-          token,
-          message: "User successfullyn logged in",
-          user: {
-            email,
-            id: emailRegistered.id,
-            name: emailRegistered.name,
-            photo: emailRegistered.photo,
-            profile: emailRegistered.profile,
-          },
-        });
-      }
-
-      return response.status(422).json({
-        validation: "Invalid credentials",
-        field: ["email", "password"],
+    if (!samePassword) {
+      return response.json({
+        validation: "Senha inválida",
+        field: "password",
       });
     }
 
-    return response.json({ validation: "Non-existent user", field: ["email"] });
+    // Pass ID in params describre how compare differents tokens
+    const token = generateToken({ id: emailRegistered.id });
+
+    return response.json({
+      token,
+      user: {
+        email,
+        id: emailRegistered.id,
+        name: emailRegistered.name,
+        photo: emailRegistered.photo,
+        profile: emailRegistered.profile,
+      },
+    });
   },
 
   async forgotPassword(request, response) {
@@ -92,26 +87,27 @@ module.exports = {
       where: { email: email.toLowerCase() },
     });
 
-    if (emailRegistered) {
-      const timeExpired = new Date();
-      timeExpired.setHours(timeExpired.getHours() + 1);
-
-      const userToken = crypto.randomBytes(20).toString("hex");
-
-      const responseEmail = await sendEmail(
-        userToken,
-        request.body,
-        emailRegistered.name
-      );
-      await Users.update(
-        { expiredToken: userToken, timeExpired },
-        { where: { email } }
-      );
-      return response.status(200).json(responseEmail);
+    if (!emailRegistered) {
+      return response.json({ validation: "Email inexistente", field: "email" });
     }
-    return response
-      .status(404)
-      .json({ validation: "Non-existent user", field: ["email"] });
+
+    const timeExpired = new Date();
+    timeExpired.setHours(timeExpired.getHours() + 1);
+
+    const userToken = crypto.randomBytes(20).toString("hex");
+
+    const responseEmail = await sendEmail(
+      userToken,
+      request.body,
+      emailRegistered.name
+    );
+
+    await Users.update(
+      { expiredToken: userToken, timeExpired },
+      { where: { email } }
+    );
+
+    return response.json(responseEmail);
   },
 
   async resetPassword(request, response) {
@@ -122,7 +118,7 @@ module.exports = {
     });
 
     if (userRegistered && userRegistered.timeExpired < new Date())
-      return response.json({ validation: "Expired Token" });
+      return response.json({ validation: "Token expirado" });
 
     if (userRegistered) {
       const cryptographedPassword = await bcrypt.hashSync(password, 10);
@@ -135,9 +131,7 @@ module.exports = {
         { where: { expiredToken: token } }
       );
 
-      return response
-        .status(200)
-        .json({ message: "Password updated successfully" });
+      return response.json({ message: "Senha atualizada com sucesso" });
     }
 
     return response.json({ validation: "Expired Token" });
@@ -147,31 +141,36 @@ module.exports = {
     const findUsers = await Users.findAll({
       attributes: ["id", "profile", "name", "email", "photo"],
     });
-    return response.status(200).json(findUsers);
+    return response.json(findUsers);
   },
 
   async editUserProfile(request, response) {
     const id = request.user_id;
-    const { email } = request.body;
+    const { email, password } = request.body;
 
     const userRegistered = await Users.findOne({ where: { id } });
 
-    if (email) {
-      const existentEmail = await Users.findOne({
-        where: { email },
+    const existentEmail = await Users.findOne({
+      where: { email: { [Op.ne]: email } },
+    });
+
+    if (existentEmail)
+      return response.json({
+        Validation: "Email já cadastrado",
+        field: "email",
       });
 
-      if (existentEmail)
-        return response
-          .status(422)
-          .json({ Validation: "Non-existent email", field: ["email"] });
-    }
-
     if (userRegistered) {
-      await Users.update(request.body, { where: { id } });
+      const cryptographedPassword = await bcrypt.hashSync(password, 10);
+
+      await Users.update(
+        { ...request.body, cryptographedPassword },
+        { where: { id } }
+      );
+
       const updatedUser = await Users.findByPk(id);
 
-      return response.status(200).json({
+      return response.json({
         user: {
           id,
           name: updatedUser.name,
@@ -182,7 +181,7 @@ module.exports = {
         message: "Profile updated successfully",
       });
     }
-    return response.json({ validation: "Non-existent user" });
+    return response.json({ validation: "Usuário inexistente" });
   },
 
   async addUserPhoto(request, response) {
@@ -195,7 +194,7 @@ module.exports = {
       await Users.update({ photo: filename }, { where: { id } });
       const updatedPhoto = await Users.findByPk(id);
 
-      return response.status(200).json({
+      return response.json({
         user: {
           id,
           name: updatedPhoto.name,
@@ -207,6 +206,6 @@ module.exports = {
       });
     }
 
-    return response.json({ validation: "Non-existent user" });
+    return response.json({ validation: "Usuário inexistente" });
   },
 };
