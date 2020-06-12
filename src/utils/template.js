@@ -38,7 +38,7 @@ module.exports = {
             <p>${expiredToken}</p>
           </div>
           
-          <a href="findme://127.0.0.1:19000/ResetPassword" style="margin: 0 50px">
+          <a href="findme://ResetPassword" style="margin: 0 50px">
             Redefinir senha
           </a>
   
