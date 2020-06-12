@@ -38,7 +38,7 @@ module.exports = {
             <p>${expiredToken}</p>
           </div>
           
-          <a href="findme://ResetPassword" style="margin: 0 50px">
+          <a href="https://app.adjust.com/myadjustID?deep_link=findme://ResetPassword" style="margin: 0 50px">
             Redefinir senha
           </a>
   
