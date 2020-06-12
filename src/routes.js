@@ -38,12 +38,12 @@ const {
 //
 // /////////////////////////////////////////////////////////////////////////
 routes.post("/login", singIn);
+routes.get("/user/list", listUser);
 routes.post("/user/create", singUp);
 routes.post("/user/password/new", resetPassword);
 routes.post("/user/password/forgot", forgotPassword);
 
 routes.use(tokkenAuthorization);
-routes.get("/user/list", listUser);
 routes.put("/user/:userId/profile", editUserProfile);
 routes.put("/user/:userId/photo", settingImage, addUserPhoto);
 
