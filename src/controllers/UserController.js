@@ -16,8 +16,10 @@ module.exports = {
 
     if (emailAlreadyRegistered) {
       return response.json({
-        validation: "Este email já está em uso.",
-        field: "email",
+        validation: {
+          field: "email",
+          message: "Este email já está em uso.",
+        },
       });
     }
 
@@ -27,8 +29,10 @@ module.exports = {
 
     if (nameAlreadyRegistered) {
       return response.json({
-        validation: "Este nome já está em uso.",
-        field: "name",
+        validation: {
+          field: "name",
+          message: "Este nome já está em uso.",
+        },
       });
     }
 
@@ -64,15 +68,22 @@ module.exports = {
     });
 
     if (!emailRegistered) {
-      return response.json({ validation: "Email inexistente", field: "email" });
+      return response.json({
+        validation: {
+          field: "email",
+          message: "Email inexistente",
+        },
+      });
     }
 
     const samePassword = bcrypt.compareSync(password, emailRegistered.password);
 
     if (!samePassword) {
       return response.json({
-        validation: "Senha inválida",
-        field: "password",
+        validation: {
+          field: "password",
+          message: "Senha inválida",
+        },
       });
     }
 
@@ -99,7 +110,12 @@ module.exports = {
     });
 
     if (!emailRegistered) {
-      return response.json({ validation: "Email inexistente", field: "email" });
+      return response.json({
+        validation: {
+          field: "email",
+          message: "Email inexistente",
+        },
+      });
     }
 
     const timeExpired = new Date();
@@ -129,7 +145,12 @@ module.exports = {
     });
 
     if (userRegistered && userRegistered.timeExpired < new Date())
-      return response.json({ validation: "Token expirado" });
+      return response.json({
+        validation: {
+          field: "token",
+          message: "Token expirado",
+        },
+      });
 
     if (userRegistered) {
       const cryptographedPassword = await bcrypt.hashSync(password, 10);
@@ -145,7 +166,12 @@ module.exports = {
       return response.json({ message: "Senha atualizada com sucesso" });
     }
 
-    return response.json({ validation: "Expired Token" });
+    return response.json({
+      validation: {
+        field: "token",
+        message: "Token expirado",
+      },
+    });
   },
 
   async listUser(request, response) {
@@ -167,8 +193,10 @@ module.exports = {
 
     if (existentEmail)
       return response.json({
-        Validation: "Email já cadastrado",
-        field: "email",
+        Validation: {
+          field: "email",
+          message: "Email já cadastrado",
+        },
       });
 
     if (userRegistered) {
