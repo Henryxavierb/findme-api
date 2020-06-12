@@ -16,7 +16,7 @@ module.exports = {
       ...othersFields
     } = request.body;
 
-    const user_id = request.user_id;
+    const { userId: user_id } = request.params;
     const userRegistered = await Users.findByPk(user_id);
 
     if (!userRegistered)
@@ -54,7 +54,7 @@ module.exports = {
 
   async updateEvent(request, response) {
     const { id } = request.params;
-    const user_id = request.user_id;
+    const { userId: user_id } = request.params;
     const { owner, beginDate, endDate } = request.body;
 
     const userRegistered = await Users.findByPk(user_id);
@@ -115,7 +115,7 @@ module.exports = {
   },
 
   async listEventsByUser(request, response) {
-    const user_id = request.user_id;
+    const { userId: user_id } = request.params;
     const { id, today, theme = "", orderBy = "ASC" } = request.body;
 
     const beginToday = moment({ hour: 0, minute: 1, second: 0 });
@@ -138,7 +138,7 @@ module.exports = {
 
   async deleteEventByUser(request, response) {
     const { id } = request.params;
-    const user_id = request.user_id;
+    const { userId: user_id } = request.params;
 
     const eventRegistered = await Events.findByPk(id);
     const userRegistered = await Users.findByPk(user_id);

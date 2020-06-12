@@ -182,7 +182,7 @@ module.exports = {
   },
 
   async editUserProfile(request, response) {
-    const id = request.user_id;
+    const { userId: id } = request.params;
     const { email, password } = request.body;
 
     const userRegistered = await Users.findOne({ where: { id } });
@@ -224,7 +224,7 @@ module.exports = {
   },
 
   async addUserPhoto(request, response) {
-    const id = request.user_id;
+    const { userId: id } = request.params;
     const { filename } = request.file;
 
     const userRegistered = await Users.findByPk(id);

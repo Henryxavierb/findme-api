@@ -44,8 +44,8 @@ routes.post("/user/password/forgot", forgotPassword);
 
 routes.use(tokkenAuthorization);
 routes.get("/user/list", listUser);
-routes.put("/user/profile", editUserProfile);
-routes.put("/user/photo", settingImage, addUserPhoto);
+routes.put("/user/:userId/profile", editUserProfile);
+routes.put("/user/:userId/photo", settingImage, addUserPhoto);
 
 // /////////////////////////////////////////////////////////////////////////
 //
@@ -53,10 +53,10 @@ routes.put("/user/photo", settingImage, addUserPhoto);
 //
 // /////////////////////////////////////////////////////////////////////////
 routes.get("/event/list", listAllEvents);
-routes.get("/event/list/user", listEventsByUser);
-routes.delete("/event/:id/delete", deleteEventByUser);
-routes.post("/event/create", settingImage, createEvent);
-routes.put("/event/:id/edit", settingImage, updateEvent);
-routes.delete("/event/delete", autoDestroyEventBeforeToday);
+routes.get("/event/:userId/list", listEventsByUser);
+routes.delete("/event/:userId/delete/:id", deleteEventByUser);
+routes.post("/event/:userId/create", settingImage, createEvent);
+routes.put("/event/:userId/edit/:id", settingImage, updateEvent);
+routes.delete("/event/:userId/delete/:id", autoDestroyEventBeforeToday);
 
 module.exports = routes;
