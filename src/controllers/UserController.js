@@ -106,7 +106,7 @@ module.exports = {
     const { email } = request.body;
 
     const emailRegistered = await Users.findOne({
-      where: { email: email.toLowerCase() },
+      where: { email },
     });
 
     if (!emailRegistered) {
