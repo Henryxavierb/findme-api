@@ -10,14 +10,25 @@ module.exports = {
   async singUp(request, response) {
     const { name, email, password } = request.body;
 
-    const alreadyRegistered = await Users.findOne({
-      where: { email: email.toLowerCase() },
+    const emailAlreadyRegistered = await Users.findOne({
+      where: { email },
     });
 
-    if (alreadyRegistered) {
+    if (emailAlreadyRegistered) {
       return response.json({
-        validation: "Este email já está cadastrado.",
+        validation: "Este email já está em uso.",
         field: "email",
+      });
+    }
+
+    const nameAlreadyRegistered = await Users.findOne({
+      where: { name },
+    });
+
+    if (nameAlreadyRegistered) {
+      return response.json({
+        validation: "Este nome já está em uso.",
+        field: "name",
       });
     }
 
