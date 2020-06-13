@@ -187,23 +187,30 @@ module.exports = {
 
     const userRegistered = await Users.findOne({ where: { id } });
 
-    const existentEmail = await Users.findOne({
-      where: { email: { [Op.ne]: email } },
-    });
-
-    if (existentEmail)
-      return response.json({
-        Validation: {
-          field: "email",
-          message: "Email já cadastrado",
-        },
+    if (email) {
+      const existentEmail = await Users.findOne({
+        where: { email: { [Op.ne]: email } },
       });
 
+      if (existentEmail)
+        return response.json({
+          Validation: {
+            field: "email",
+            message: "Email já cadastrado",
+          },
+        });
+    }
+
     if (userRegistered) {
-      const cryptographedPassword = await bcrypt.hashSync(password, 10);
+      let cryptographedPassword;
+      if (password) {
+        cryptographedPassword = await bcrypt.hashSync(password, 10);
+      }
 
       await Users.update(
-        { ...request.body, cryptographedPassword },
+        password
+          ? { ...request.body, cryptographedPassword }
+          : { ...request.body },
         { where: { id } }
       );
 
@@ -217,7 +224,6 @@ module.exports = {
           photo: updatedUser.photo,
           profile: updatedUser.profile,
         },
-        message: "Profile updated successfully",
       });
     }
     return response.json({ validation: "Usuário inexistente" });
