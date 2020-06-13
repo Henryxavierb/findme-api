@@ -183,7 +183,7 @@ module.exports = {
 
   async editUserProfile(request, response) {
     const { userId: id } = request.params;
-    const { email, password } = request.body;
+    const { name, email, password } = request.body;
 
     const userRegistered = await Users.findOne({ where: { id } });
 
@@ -201,7 +201,21 @@ module.exports = {
         });
     }
 
+    const nameAlreadyRegistered = await Users.findOne({
+      where: { name, id: { [Op.ne]: id } },
+    });
+
+    if (nameAlreadyRegistered) {
+      return response.json({
+        validation: {
+          field: "name",
+          message: "Este nome já está em uso.",
+        },
+      });
+    }
+
     if (userRegistered) {
+      console.log(password);
       const cryptographedPassword = await bcrypt.hashSync(password, 10);
 
       await Users.update(
