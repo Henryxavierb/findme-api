@@ -189,7 +189,7 @@ module.exports = {
 
     if (email) {
       const existentEmail = await Users.findOne({
-        where: { email: { [Op.ne]: email } },
+        where: { email, id: { [Op.ne]: id } },
       });
 
       if (existentEmail)
