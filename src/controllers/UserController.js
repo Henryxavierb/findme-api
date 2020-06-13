@@ -194,7 +194,7 @@ module.exports = {
 
       if (existentEmail)
         return response.json({
-          Validation: {
+          validation: {
             field: "email",
             message: "Email já cadastrado",
           },
