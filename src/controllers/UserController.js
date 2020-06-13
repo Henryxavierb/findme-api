@@ -202,10 +202,7 @@ module.exports = {
     }
 
     if (userRegistered) {
-      let cryptographedPassword;
-      if (password) {
-        cryptographedPassword = await bcrypt.hashSync(password, 10);
-      }
+      const cryptographedPassword = await bcrypt.hashSync(password, 10);
 
       await Users.update(
         password
