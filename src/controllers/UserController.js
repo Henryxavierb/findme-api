@@ -206,7 +206,7 @@ module.exports = {
 
       await Users.update(
         password
-          ? { ...request.body, cryptographedPassword }
+          ? { ...request.body, password: cryptographedPassword }
           : { ...request.body },
         { where: { id } }
       );
