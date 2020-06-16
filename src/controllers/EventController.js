@@ -104,7 +104,7 @@ module.exports = {
 
     const events = await Events.findAll({
       where: {
-        id: id ? id : { [Op.gte]: 1 },
+        id: id || { [Op.not]: null },
         theme: { [Op.iLike]: `%${theme}%` },
         beginDate: today ? { [Op.between]: [bd, ed] } : { [Op.not]: null },
       },
@@ -124,7 +124,7 @@ module.exports = {
     const events = await Events.findAll({
       where: {
         user_id,
-        id: id ? id : { [Op.gte]: 1 },
+        id: id || { [Op.not]: null },
         theme: { [Op.iLike]: `%${theme}%` },
         beginDate: today
           ? { [Op.between]: [beginToday, endToday] }
