@@ -4,16 +4,17 @@ class Event extends Model {
   static init(connection) {
     super.init(
       {
-        endDate: DataTypes.DATE,
-        beginDate: DataTypes.DATE,
         link: DataTypes.STRING,
         theme: DataTypes.STRING,
         owner: DataTypes.STRING,
         image: DataTypes.STRING,
+        endDate: DataTypes.DATE,
         status: DataTypes.STRING,
         notify: DataTypes.BOOLEAN,
         youtube: DataTypes.STRING,
         twitter: DataTypes.STRING,
+        beginDate: DataTypes.DATE,
+        ownerPhoto: DataTypes.DATE,
         linkedin: DataTypes.STRING,
         instagram: DataTypes.STRING,
         description: DataTypes.STRING,

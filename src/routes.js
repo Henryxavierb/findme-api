@@ -5,7 +5,7 @@ const { tokkenAuthorization } = require("./utils/index");
 
 const routes = Router();
 const upload = multer(uploadConfig);
-const settingImage = upload.single("photo");
+const settingImage = upload.single("thubnail");
 
 // /////////////////////////////////////////////////////////////////////////
 //

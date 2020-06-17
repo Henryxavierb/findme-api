@@ -103,6 +103,13 @@ module.exports = {
     const ed = moment({ hour: 23, minute: 59, second: 0 });
 
     const events = await Events.findAll({
+      include: [
+        {
+          model: Users,
+          as: "user",
+          attributes: ["photo"],
+        },
+      ],
       where: {
         id: id || { [Op.not]: null },
         theme: { [Op.iLike]: `%${theme}%` },

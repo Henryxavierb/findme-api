@@ -215,7 +215,6 @@ module.exports = {
     }
 
     if (userRegistered) {
-      console.log(password);
       const cryptographedPassword = await bcrypt.hashSync(password, 10);
 
       await Users.update(
