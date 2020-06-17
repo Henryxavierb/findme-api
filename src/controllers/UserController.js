@@ -241,12 +241,15 @@ module.exports = {
 
   async addUserPhoto(request, response) {
     const { userId: id } = request.params;
-    const { filename } = request.file;
+    const photo = request.file;
 
     const userRegistered = await Users.findByPk(id);
 
     if (userRegistered) {
-      await Users.update({ photo: filename }, { where: { id } });
+      await Users.update(
+        { photo: (photo && photo.filename) || null },
+        { where: { id } }
+      );
       const updatedPhoto = await Users.findByPk(id);
 
       return response.json({
