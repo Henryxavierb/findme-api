@@ -201,17 +201,19 @@ module.exports = {
         });
     }
 
-    const nameAlreadyRegistered = await Users.findOne({
-      where: { name, id: { [Op.ne]: id } },
-    });
-
-    if (nameAlreadyRegistered) {
-      return response.json({
-        validation: {
-          field: "name",
-          message: "Este nome já está em uso.",
-        },
+    if (name) {
+      const nameAlreadyRegistered = await Users.findOne({
+        where: { name, id: { [Op.ne]: id } },
       });
+
+      if (nameAlreadyRegistered) {
+        return response.json({
+          validation: {
+            field: "name",
+            message: "Este nome já está em uso.",
+          },
+        });
+      }
     }
 
     if (userRegistered) {
@@ -246,10 +248,7 @@ module.exports = {
     const userRegistered = await Users.findByPk(id);
 
     if (userRegistered) {
-      await Users.update(
-        { photo: (photo && photo.filename) || null },
-        { where: { id } }
-      );
+      await Users.update({ photo: photo && photo.filename }, { where: { id } });
       const updatedPhoto = await Users.findByPk(id);
 
       return response.json({
