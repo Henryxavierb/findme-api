@@ -248,7 +248,7 @@ module.exports = {
 
     if (userRegistered) {
       await Users.update(
-        { photo: (request.file && request.file.filename) || null },
+        { photo: (request.body && request.body.thumbnail) || null },
         { where: { id } }
       );
       const updatedPhoto = await Users.findByPk(id);
