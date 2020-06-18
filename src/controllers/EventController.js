@@ -1,3 +1,4 @@
+const crypto = require("crypto");
 const { Op } = require("sequelize");
 const Users = require("../models/User");
 const Events = require("../models/Event");
@@ -23,7 +24,12 @@ module.exports = {
       return response.json({ validation: "User dont exist" });
 
     if (!validateDate(endDate, beginDate)) {
-      return response.json({ validation: "Invalid date" });
+      return response.json({
+        validation: {
+          field: "endDate",
+          message: "Data inválida",
+        },
+      });
     }
 
     const hasClockShocls = await Events.findOne({
@@ -32,16 +38,23 @@ module.exports = {
 
     if (hasClockShocls) {
       return response.json({
-        validation: "This owner has event between begin date and end date",
+        validation: {
+          field: "spreader",
+          message:
+            "Esse representante possui um evento cadastrado entre essas datas",
+        },
       });
     }
 
+    const id = crypto.randomBytes(8).toString("hex");
+
     const createEvent = await Events.create({
+      id,
       owner,
       status,
       notify,
-      endDate,
       user_id,
+      endDate,
       beginDate,
       ...othersFields,
     });
@@ -75,7 +88,11 @@ module.exports = {
 
       if (hasClockShocks)
         return response.json({
-          validation: "This owner has event between begin date and end date",
+          validation: {
+            field: "spreader",
+            message:
+              "Esse representante possui um evento cadastrado entre essas datas",
+          },
         });
 
       await Events.update(request.body, { where: { id, user_id } });
@@ -103,13 +120,13 @@ module.exports = {
     const ed = moment({ hour: 23, minute: 59, second: 0 });
 
     const events = await Events.findAll({
-      include: [
-        {
-          model: Users,
-          as: "user",
-          attributes: ["photo"],
-        },
-      ],
+      // include: [
+      //   {
+      //     model: Users,
+      //     as: "user",
+      //     attributes: ["photo"],
+      //   },
+      // ],
       where: {
         id: id || { [Op.not]: null },
         theme: { [Op.iLike]: `%${theme}%` },

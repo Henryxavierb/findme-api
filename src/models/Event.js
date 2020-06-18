@@ -14,7 +14,6 @@ class Event extends Model {
         youtube: DataTypes.STRING,
         twitter: DataTypes.STRING,
         beginDate: DataTypes.DATE,
-        ownerPhoto: DataTypes.DATE,
         linkedin: DataTypes.STRING,
         instagram: DataTypes.STRING,
         description: DataTypes.STRING,
