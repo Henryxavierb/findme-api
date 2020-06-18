@@ -114,7 +114,7 @@ module.exports = {
   //
   // //////////////////////////////////////////////////////////////////////
   async listAllEvents(request, response) {
-    const { id, today = false, theme = "", orderBy = "ASC" } = request.body;
+    const { theme = "", orderBy = "ASC" } = request.params;
 
     const bd = moment({ hour: 0, minute: 1, second: 0 });
     const ed = moment({ hour: 23, minute: 59, second: 0 });
@@ -128,9 +128,7 @@ module.exports = {
       //   },
       // ],
       where: {
-        id: id || { [Op.not]: null },
         theme: { [Op.iLike]: `%${theme}%` },
-        beginDate: today ? { [Op.between]: [bd, ed] } : { [Op.not]: null },
       },
       order: [["beginDate", orderBy]],
     });

@@ -9,7 +9,7 @@ class Event extends Model {
         owner: DataTypes.STRING,
         image: DataTypes.STRING,
         endDate: DataTypes.DATE,
-        status: DataTypes.STRING,
+        status: DataTypes.BOOLEAN,
         notify: DataTypes.BOOLEAN,
         youtube: DataTypes.STRING,
         twitter: DataTypes.STRING,
