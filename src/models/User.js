@@ -10,7 +10,9 @@ class User extends Model {
         photoUrl: {
           type: DataTypes.VIRTUAL,
           get() {
-            return `${process.env.PHOTO_URL}/files/${this.photo}`;
+            return this.photo
+              ? `${process.env.PHOTO_URL}/files/${this.photo}`
+              : null;
           },
         },
         password: DataTypes.STRING,

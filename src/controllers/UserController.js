@@ -48,15 +48,12 @@ module.exports = {
 
     const token = generateToken({ id: newUser.id });
 
-    const sendThumbnail = newUser.photo ? newUser.photoUrl : null;
-
     return response.json({
       token,
       user: {
         name,
         email,
         id: newUser.id,
-        photo: sendThumbnail,
       },
     });
   },
@@ -91,17 +88,13 @@ module.exports = {
     // Pass ID in params describre how compare differents tokens
     const token = generateToken({ id: emailRegistered.id });
 
-    const sendThumbnail = emailRegistered.photo
-      ? emailRegistered.photoUrl
-      : null;
-
     return response.json({
       token,
       user: {
         email,
-        photo: sendThumbnail,
         id: emailRegistered.id,
         name: emailRegistered.name,
+        photo: emailRegistered.photoUrl,
       },
     });
   },
