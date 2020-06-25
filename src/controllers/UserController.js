@@ -48,13 +48,15 @@ module.exports = {
 
     const token = generateToken({ id: newUser.id });
 
+    const sendThumbnail = newUser.photo ? newUser.photoUrl : null;
+
     return response.json({
       token,
       user: {
         name,
         email,
         id: newUser.id,
-        photo: newUser.photo,
+        photo: sendThumbnail,
       },
     });
   },
@@ -89,13 +91,17 @@ module.exports = {
     // Pass ID in params describre how compare differents tokens
     const token = generateToken({ id: emailRegistered.id });
 
+    const sendThumbnail = emailRegistered.photo
+      ? emailRegistered.photoUrl
+      : null;
+
     return response.json({
       token,
       user: {
         email,
+        photo: sendThumbnail,
         id: emailRegistered.id,
         name: emailRegistered.name,
-        photo: emailRegistered.photo,
       },
     });
   },
@@ -174,8 +180,9 @@ module.exports = {
 
   async listUser(request, response) {
     const findUsers = await Users.findAll({
-      attributes: ["id", "name", "email", "photo"],
+      attributes: ["id", "name", "email", "photo", "photoUrl"],
     });
+
     return response.json(findUsers);
   },
 
@@ -231,7 +238,7 @@ module.exports = {
           id,
           name: updatedUser.name,
           email: updatedUser.email,
-          photo: updatedUser.photo,
+          photo: updatedUser.photoUrl,
         },
       });
     }
@@ -256,7 +263,7 @@ module.exports = {
           id,
           name: updatedPhoto.name,
           email: updatedPhoto.email,
-          photo: updatedPhoto.photo,
+          photo: updatedPhoto.photoUrl,
         },
         message: "Photo updated successfully",
       });

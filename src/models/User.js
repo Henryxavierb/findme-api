@@ -7,12 +7,19 @@ class User extends Model {
         name: DataTypes.STRING,
         email: DataTypes.STRING,
         photo: DataTypes.STRING,
+        photoUrl: {
+          type: DataTypes.VIRTUAL,
+          get() {
+            return `${process.env.PHOTO_URL}/files/${this.photo}`;
+          },
+        },
         password: DataTypes.STRING,
         expiredToken: DataTypes.STRING,
       },
       { sequelize: connection }
     );
   }
+
   static associate(models) {
     this.hasMany(models.Event, {
       foreignKey: "user_id",
