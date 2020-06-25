@@ -7,7 +7,6 @@ class User extends Model {
         name: DataTypes.STRING,
         email: DataTypes.STRING,
         photo: DataTypes.STRING,
-        profile: DataTypes.STRING,
         password: DataTypes.STRING,
         expiredToken: DataTypes.STRING,
       },

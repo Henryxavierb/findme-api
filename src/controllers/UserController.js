@@ -55,7 +55,6 @@ module.exports = {
         email,
         id: newUser.id,
         photo: newUser.photo,
-        profile: newUser.profile,
       },
     });
   },
@@ -97,7 +96,6 @@ module.exports = {
         id: emailRegistered.id,
         name: emailRegistered.name,
         photo: emailRegistered.photo,
-        profile: emailRegistered.profile,
       },
     });
   },
@@ -176,7 +174,7 @@ module.exports = {
 
   async listUser(request, response) {
     const findUsers = await Users.findAll({
-      attributes: ["id", "profile", "name", "email", "photo"],
+      attributes: ["id", "name", "email", "photo"],
     });
     return response.json(findUsers);
   },
@@ -234,7 +232,6 @@ module.exports = {
           name: updatedUser.name,
           email: updatedUser.email,
           photo: updatedUser.photo,
-          profile: updatedUser.profile,
         },
       });
     }
@@ -248,9 +245,10 @@ module.exports = {
 
     if (userRegistered) {
       await Users.update(
-        { photo: (request.body && request.body.thumbnail) || null },
+        { photo: (request.file && request.file.filename) || null },
         { where: { id } }
       );
+
       const updatedPhoto = await Users.findByPk(id);
 
       return response.json({
@@ -259,7 +257,6 @@ module.exports = {
           name: updatedPhoto.name,
           email: updatedPhoto.email,
           photo: updatedPhoto.photo,
-          profile: updatedPhoto.profile,
         },
         message: "Photo updated successfully",
       });

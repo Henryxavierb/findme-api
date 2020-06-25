@@ -20,10 +20,6 @@ module.exports = {
         allowNull: false,
         type: Sequelize.STRING,
       },
-      profile: {
-        allowNull: true,
-        type: Sequelize.STRING,
-      },
       photo: {
         allowNull: true,
         type: Sequelize.STRING,
