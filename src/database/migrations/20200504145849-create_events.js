@@ -46,6 +46,12 @@ module.exports = {
       description: {
         allowNull: true,
         type: Sequelize.STRING,
+        validate: {
+          len: {
+            args: [10, 1000],
+            msg: "10-1000!",
+          },
+        },
       },
       image: {
         allowNull: true,

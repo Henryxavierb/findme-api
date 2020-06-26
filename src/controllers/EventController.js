@@ -12,8 +12,8 @@ module.exports = {
       owner,
       endDate,
       beginDate,
+      status = true,
       notify = false,
-      status = "CONFIRMADO",
       ...othersFields
     } = request.body;
 
