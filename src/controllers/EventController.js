@@ -68,7 +68,7 @@ module.exports = {
   async updateEvent(request, response) {
     const { id } = request.params;
     const { userId: user_id } = request.params;
-    const { owner, beginDate, endDate } = request.body;
+    const { beginDate, endDate } = request.body;
 
     const userRegistered = await Users.findByPk(user_id);
 
@@ -107,6 +107,25 @@ module.exports = {
     return response.json({ validation: "Non-existent event" });
   },
 
+  async notifyEvent(request, response) {
+    const { id } = request.params;
+    const { notify } = request.body;
+
+    const fetchEvent = await Events.findByPk(id);
+
+    if (fetchEvent) {
+      await Events.update({ notify }, { where: { id } });
+      const event = await Events.findOne({ where: { id } });
+
+      return response.json({
+        event,
+        message: "Notificação de evento atualizada",
+      });
+    }
+
+    return response.json({ validation: "Evento inexistente" });
+  },
+
   // ///////////////////////////////////////////////////////////////////////
   //
   // Filters can be applyed:
@@ -114,21 +133,22 @@ module.exports = {
   //
   // //////////////////////////////////////////////////////////////////////
   async listAllEvents(request, response) {
-    const { theme = "", orderBy = "ASC" } = request.params;
+    const { theme = "", orderBy = "ASC", isToday = false } = request.params;
 
     const bd = moment({ hour: 0, minute: 1, second: 0 });
     const ed = moment({ hour: 23, minute: 59, second: 0 });
 
+    const hasFilter = theme !== "null";
+    const hasEventToday = isToday !== "false";
+
     const events = await Events.findAll({
-      // include: [
-      //   {
-      //     model: Users,
-      //     as: "user",
-      //     attributes: ["photo"],
-      //   },
-      // ],
       where: {
-        theme: { [Op.iLike]: `%${theme}%` },
+        beginDate: hasEventToday
+          ? { [Op.between]: [bd, ed] }
+          : { [Op.not]: null },
+
+        notify: hasEventToday ? true : { [Op.not]: null },
+        theme: hasFilter ? { [Op.iLike]: `%${theme}%` } : { [Op.not]: null },
       },
       order: [["beginDate", orderBy]],
     });
