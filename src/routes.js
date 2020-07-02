@@ -26,6 +26,7 @@ const {
 const {
   createEvent,
   updateEvent,
+  notifyEvent,
   listAllEvents,
   listEventsByUser,
   deleteEventByUser,
@@ -52,11 +53,12 @@ routes.put("/user/:userId/photo", settingImage, addUserPhoto);
 // Event routes
 //
 // /////////////////////////////////////////////////////////////////////////
-routes.get("/event/list", listAllEvents);
+routes.put("/event/:id/notify", notifyEvent);
 routes.get("/event/:userId/list", listEventsByUser);
 routes.delete("/event/:userId/delete/:id", deleteEventByUser);
 routes.post("/event/:userId/create", settingImage, createEvent);
 routes.put("/event/:userId/edit/:id", settingImage, updateEvent);
+routes.get("/event/list/:orderBy/:theme/:isToday", listAllEvents);
 routes.delete("/event/:userId/delete/:id", autoDestroyEventBeforeToday);
 
 module.exports = routes;
