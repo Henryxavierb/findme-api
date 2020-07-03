@@ -56,6 +56,7 @@ module.exports = {
       user_id,
       endDate,
       beginDate,
+      photo: request.file && request.file.filename,
       ...othersFields,
     });
 
@@ -95,7 +96,10 @@ module.exports = {
           },
         });
 
-      await Events.update(request.body, { where: { id, user_id } });
+      await Events.update(
+        { ...request.body, photo: request.file && request.file.filename },
+        { where: { id, user_id } }
+      );
       const updatedEvent = await Events.findOne({ where: { id, user_id } });
 
       return response.json({

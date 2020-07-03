@@ -60,7 +60,7 @@ routes.put("/event/:id/notify", notifyEvent);
 routes.delete("/event/:userId/delete/:id", deleteEventByUser);
 routes.post("/event/:userId/create", settingImage, createEvent);
 routes.put("/event/:userId/edit/:id", settingImage, updateEvent);
+routes.get("/event/list/:orderBy/:theme/:isToday", listAllEvents);
 routes.delete("/event/:userId/delete/:id", autoDestroyEventBeforeToday);
-routes.get("/event/list/:orderBy/:theme/:isToday", settingImage, listAllEvents);
 
 module.exports = routes;
