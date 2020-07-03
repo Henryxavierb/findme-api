@@ -53,7 +53,7 @@ module.exports = {
           },
         },
       },
-      image: {
+      photo: {
         allowNull: true,
         type: Sequelize.STRING,
       },
