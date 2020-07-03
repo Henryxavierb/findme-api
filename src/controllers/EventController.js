@@ -71,8 +71,6 @@ module.exports = {
     const { userId: user_id } = request.params;
     const { beginDate, endDate } = request.body;
 
-    console.log("\n\n\nFILE: ", request.file, "\n\n\n");
-
     const userRegistered = await Users.findByPk(user_id);
 
     if (!userRegistered)
