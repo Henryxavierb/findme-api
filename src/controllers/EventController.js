@@ -27,7 +27,7 @@ module.exports = {
       return response.json({
         validation: {
           field: "endDate",
-          message: "Data término deve ser maior que a de inicio",
+          message: "Data maior que data de inicio",
         },
       });
     }
