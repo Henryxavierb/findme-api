@@ -7,8 +7,8 @@ class Event extends Model {
         link: DataTypes.STRING,
         theme: DataTypes.STRING,
         owner: DataTypes.STRING,
-        image: DataTypes.STRING,
-        imageUrl: {
+        photo: DataTypes.STRING,
+        photoUrl: {
           type: DataTypes.VIRTUAL,
           get() {
             return this.image
