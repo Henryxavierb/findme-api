@@ -21,6 +21,7 @@ const {
   resetPassword,
   editUserProfile,
   forgotPassword,
+  fetchSpreaderProfile,
 } = require("./controllers/UserController");
 
 const {
@@ -47,6 +48,7 @@ routes.post("/user/password/forgot", forgotPassword);
 routes.use(tokkenAuthorization);
 routes.put("/user/:userId/profile", editUserProfile);
 routes.put("/user/:userId/photo", settingImage, addUserPhoto);
+routes.get("/user/:spreaderEmail/profile", fetchSpreaderProfile);
 
 // /////////////////////////////////////////////////////////////////////////
 //
@@ -54,7 +56,7 @@ routes.put("/user/:userId/photo", settingImage, addUserPhoto);
 //
 // /////////////////////////////////////////////////////////////////////////
 routes.put("/event/:id/notify", notifyEvent);
-routes.get("/event/:userId/list", listEventsByUser);
+// routes.get("/event/:userId/list", listEventsByUser);
 routes.delete("/event/:userId/delete/:id", deleteEventByUser);
 routes.post("/event/:userId/create", settingImage, createEvent);
 routes.put("/event/:userId/edit/:id", settingImage, updateEvent);
