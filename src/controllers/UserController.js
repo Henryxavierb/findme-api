@@ -185,7 +185,7 @@ module.exports = {
 
     const fetchUserProfile = await Users.findOne({
       where: { email },
-      attributes: ["id", "name", "email", "photo"],
+      attributes: ["id", "name", "email", "photo", "photoUrl"],
     });
 
     const totalEventDiscloseds = await Events.count({
