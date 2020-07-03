@@ -27,7 +27,7 @@ module.exports = {
       return response.json({
         validation: {
           field: "endDate",
-          message: "Data inválida",
+          message: "Data término deve ser maior que a de inicio",
         },
       });
     }
@@ -151,32 +151,33 @@ module.exports = {
         theme: hasFilter ? { [Op.iLike]: `%${theme}%` } : { [Op.not]: null },
       },
       order: [["beginDate", orderBy]],
+      include: [{ as: "user", model: Users, attributes: ["email"] }],
     });
 
     return response.json(events);
   },
 
-  async listEventsByUser(request, response) {
-    const { userId: user_id } = request.params;
-    const { id, today, theme = "", orderBy = "ASC" } = request.body;
+  // async listEventsByUser(request, response) {
+  //   const { userId: user_id } = request.params;
+  //   const { id, today, theme = "", orderBy = "ASC" } = request.body;
 
-    const beginToday = moment({ hour: 0, minute: 1, second: 0 });
-    const endToday = moment({ hour: 23, minute: 59, second: 0 });
+  //   const beginToday = moment({ hour: 0, minute: 1, second: 0 });
+  //   const endToday = moment({ hour: 23, minute: 59, second: 0 });
 
-    const events = await Events.findAll({
-      where: {
-        user_id,
-        id: id || { [Op.not]: null },
-        theme: { [Op.iLike]: `%${theme}%` },
-        beginDate: today
-          ? { [Op.between]: [beginToday, endToday] }
-          : { [Op.not]: null },
-      },
-      order: [["beginDate", orderBy]],
-    });
+  //   const events = await Events.findAll({
+  //     where: {
+  //       user_id,
+  //       id: id || { [Op.not]: null },
+  //       theme: { [Op.iLike]: `%${theme}%` },
+  //       beginDate: today
+  //         ? { [Op.between]: [beginToday, endToday] }
+  //         : { [Op.not]: null },
+  //     },
+  //     order: [["beginDate", orderBy]],
+  //   });
 
-    return response.json(events);
-  },
+  //   return response.json(events);
+  // },
 
   async deleteEventByUser(request, response) {
     const { id } = request.params;
