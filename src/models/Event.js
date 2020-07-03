@@ -11,8 +11,8 @@ class Event extends Model {
         photoUrl: {
           type: DataTypes.VIRTUAL,
           get() {
-            return this.image
-              ? `${process.env.PHOTO_URL}/images/${this.image}`
+            return this.photo
+              ? `${process.env.PHOTO_URL}/images/${this.photo}`
               : null;
           },
         },
