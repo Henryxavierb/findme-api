@@ -56,7 +56,7 @@ module.exports = {
       user_id,
       endDate,
       beginDate,
-      photo: request.file && request.file.filename,
+      photo: request.file ? request.file.filename : "",
       ...othersFields,
     });
 
@@ -70,6 +70,8 @@ module.exports = {
     const { id } = request.params;
     const { userId: user_id } = request.params;
     const { beginDate, endDate } = request.body;
+
+    console.log("\n\n\nFILE: ", request.file, "\n\n\n");
 
     const userRegistered = await Users.findByPk(user_id);
 
@@ -97,7 +99,7 @@ module.exports = {
         });
 
       await Events.update(
-        { ...request.body, photo: request.file && request.file.filename },
+        { ...request.body, photo: request.file ? request.file.filename : "" },
         { where: { id, user_id } }
       );
       const updatedEvent = await Events.findOne({ where: { id, user_id } });
