@@ -5,6 +5,7 @@ const { Op } = require("sequelize");
 const { sendEmail, generateToken } = require("../utils/index");
 
 const Users = require("../models/User");
+const Events = require("../models/Event");
 
 module.exports = {
   async singUp(request, response) {
@@ -177,6 +178,38 @@ module.exports = {
     });
 
     return response.json(findUsers);
+  },
+
+  async fetchSpreaderProfile(request, response) {
+    const { spreaderEmail: email } = request.params;
+
+    const fetchUserProfile = await Users.findOne({
+      where: { email },
+      attributes: ["id", "name", "email", "photoUrl"],
+    });
+
+    const totalEventDiscloseds = await Events.count({
+      where: { user_id: fetchUserProfile.id },
+    });
+
+    const totalEventCanceled = await Events.count({
+      where: { user_id: fetchUserProfile.id, status: false },
+    });
+
+    if (!fetchUserProfile) {
+      return response.json({
+        validation: {
+          field: "email",
+          message: "Email inexistente",
+        },
+      });
+    }
+
+    return response.json({
+      user: fetchUserProfile,
+      eventsCanceled: totalEventCanceled,
+      eventsDiscloseds: totalEventDiscloseds,
+    });
   },
 
   async editUserProfile(request, response) {
