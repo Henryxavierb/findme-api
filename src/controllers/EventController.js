@@ -1,9 +1,8 @@
 const crypto = require("crypto");
+const moment = require("moment");
 const { Op } = require("sequelize");
 const Users = require("../models/User");
 const Events = require("../models/Event");
-
-const moment = require("moment");
 const { validateDate } = require("../utils");
 
 module.exports = {
@@ -21,7 +20,9 @@ module.exports = {
     const userRegistered = await Users.findByPk(user_id);
 
     if (!userRegistered)
-      return response.json({ validation: "User dont exist" });
+      return response.json({
+        validation: { params: "userId", message: "ID de usuário inválido" },
+      });
 
     if (!validateDate(endDate, beginDate)) {
       return response.json({
@@ -39,9 +40,10 @@ module.exports = {
     if (hasClockShocls) {
       return response.json({
         validation: {
-          field: "spreader",
+          field: "representative",
           message:
-            "Esse representante possui um evento cadastrado entre essas datas",
+            `Representante já possui evento cadastrado entre esses` +
+            ` horários`,
         },
       });
     }
@@ -62,27 +64,31 @@ module.exports = {
 
     return response.json({
       event: createEvent,
-      message: "Event registred Successfully",
+      message: "Evento cadastrado com sucesso",
     });
   },
 
   async updateEvent(request, response) {
-    const { id } = request.params;
+    const { eventId } = request.params;
     const { userId: user_id } = request.params;
     const { beginDate, endDate } = request.body;
 
     const userRegistered = await Users.findByPk(user_id);
 
     if (!userRegistered)
-      return response.json({ validation: "User dont exist" });
+      return response.json({
+        validation: { params: "userId", message: "ID de usuário inválido" },
+      });
 
-    const eventRegistered = await Events.findOne({ where: { id, user_id } });
+    const eventRegistered = await Events.findOne({
+      where: { id: eventId, user_id },
+    });
 
     if (eventRegistered) {
       const hasClockShocks = await Events.findOne({
         where: {
           user_id,
-          id: { [Op.ne]: id },
+          id: { [Op.ne]: eventId },
           beginDate: { [Op.between]: [beginDate, endDate] },
         },
       });
@@ -90,9 +96,10 @@ module.exports = {
       if (hasClockShocks)
         return response.json({
           validation: {
-            field: "spreader",
+            field: "representative",
             message:
-              "Esse representante possui um evento cadastrado entre essas datas",
+              `Representante já possui um evento cadastrado entre esses` +
+              ` horários`,
           },
         });
 
@@ -100,47 +107,59 @@ module.exports = {
         { ...request.body, photo: request.file ? request.file.filename : "" },
         { where: { id, user_id } }
       );
-      const updatedEvent = await Events.findOne({ where: { id, user_id } });
+
+      const updatedEvent = await Events.findOne({
+        where: { id: eventId, user_id },
+      });
 
       return response.json({
         updatedEvent,
-        message: "Event updated successfully",
+        message: "Evento atualizado com sucesso",
       });
     }
 
-    return response.json({ validation: "Non-existent event" });
+    return response.json({
+      validation: { params: "eventId", message: "ID de evento inválido" },
+    });
   },
 
   async notifyEvent(request, response) {
-    const { id } = request.params;
     const { notify } = request.body;
+    const { eventId } = request.params;
 
-    const fetchEvent = await Events.findByPk(id);
+    const fetchEvent = await Events.findByPk(eventId);
 
     if (fetchEvent) {
-      await Events.update({ notify }, { where: { id } });
-      const event = await Events.findOne({ where: { id } });
+      await Events.update({ notify }, { where: { id: eventId } });
+      const eventUpdated = await Events.findByPk(eventId);
 
       return response.json({
-        event,
+        event: eventUpdated,
         message: "Notificação de evento atualizada",
       });
     }
 
-    return response.json({ validation: "Evento inexistente" });
+    return response.json({
+      validation: { params: "eventId", message: "ID de evento inválido" },
+    });
   },
 
   // ///////////////////////////////////////////////////////////////////////
   //
   // Filters can be applyed:
-  // { "theme": "some text...", "orderBy": "DESC", "today": true }
+  //
+  // {
+  //   "today": true
+  //   "theme": "some text...",
+  //   "orderBy": "DESC" or "ASC",
+  // }
   //
   // //////////////////////////////////////////////////////////////////////
-  async listAllEvents(request, response) {
+  async fetchEvents(request, response) {
     const { theme = "", orderBy = "ASC", isToday = false } = request.params;
 
-    const bd = moment({ hour: 0, minute: 1, second: 0 });
-    const ed = moment({ hour: 23, minute: 59, second: 0 });
+    const beginDate = moment({ hour: 0, minute: 1, second: 0 });
+    const endDate = moment({ hour: 23, minute: 59, second: 0 });
 
     const hasFilter = theme !== "null";
     const hasEventToday = isToday !== "false";
@@ -148,7 +167,7 @@ module.exports = {
     const events = await Events.findAll({
       where: {
         beginDate: hasEventToday
-          ? { [Op.between]: [bd, ed] }
+          ? { [Op.between]: [beginDate, endDate] }
           : { [Op.not]: null },
 
         notify: hasEventToday ? true : { [Op.not]: null },
@@ -161,52 +180,29 @@ module.exports = {
     return response.json(events);
   },
 
-  // async listEventsByUser(request, response) {
-  //   const { userId: user_id } = request.params;
-  //   const { id, today, theme = "", orderBy = "ASC" } = request.body;
+  async fetchEventsByUser(request, response) {
+    const { userId: user_id, theme = "" } = request.params;
 
-  //   const beginToday = moment({ hour: 0, minute: 1, second: 0 });
-  //   const endToday = moment({ hour: 23, minute: 59, second: 0 });
+    const fetchUser = await Users.findByPk(user_id);
 
-  //   const events = await Events.findAll({
-  //     where: {
-  //       user_id,
-  //       id: id || { [Op.not]: null },
-  //       theme: { [Op.iLike]: `%${theme}%` },
-  //       beginDate: today
-  //         ? { [Op.between]: [beginToday, endToday] }
-  //         : { [Op.not]: null },
-  //     },
-  //     order: [["beginDate", orderBy]],
-  //   });
-
-  //   return response.json(events);
-  // },
-
-  async deleteEventByUser(request, response) {
-    const { id } = request.params;
-    const { userId: user_id } = request.params;
-
-    const eventRegistered = await Events.findByPk(id);
-    const userRegistered = await Users.findByPk(user_id);
-
-    if (!userRegistered) {
-      return response.json({ validation: "Non-existent user" });
+    if (!fetchUser) {
+      return response.json({
+        validation: { params: "userId", message: "ID de usuário inválido" },
+      });
     }
 
-    if (!eventRegistered) {
-      return response.json({ validation: "Non-existent event" });
-    }
+    const events = await Events.findAll({
+      where: { user_id, theme: { [Op.iLike]: `%${theme}%` } },
+    });
 
-    await Events.destroy({ where: { user_id, id } });
-    return response.json({ message: "Event deleted successfully" });
+    return response.json(events);
   },
 
-  async autoDestroyEventBeforeToday(request, response) {
+  async removeEventsBeforeToday(request, response) {
     await Events.destroy({
       where: { beginDate: { [Op.lt]: moment().subtract("days", 1) } },
     });
 
-    return response.json({ message: "Events deleteds" });
+    return response.json({ message: "Evento(s) excluido com sucesso" });
   },
 };

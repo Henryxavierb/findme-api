@@ -2,10 +2,9 @@ require("dotenv").config();
 const bcrypt = require("bcrypt");
 const crypto = require("crypto");
 const { Op } = require("sequelize");
-const { sendEmail, generateToken } = require("../utils/index");
-
 const Users = require("../models/User");
 const Events = require("../models/Event");
+const { sendEmail, generateToken } = require("../utils/index");
 
 module.exports = {
   async singUp(request, response) {
@@ -17,10 +16,7 @@ module.exports = {
 
     if (emailAlreadyRegistered) {
       return response.json({
-        validation: {
-          field: "email",
-          message: "Este email já está em uso.",
-        },
+        validation: { field: "email", message: "Este email já está em uso." },
       });
     }
 
@@ -30,10 +26,7 @@ module.exports = {
 
     if (nameAlreadyRegistered) {
       return response.json({
-        validation: {
-          field: "name",
-          message: "Este nome já está em uso.",
-        },
+        validation: { field: "name", message: "Este nome já está em uso." },
       });
     }
 
@@ -49,14 +42,7 @@ module.exports = {
 
     const token = generateToken({ id: newUser.id });
 
-    return response.json({
-      token,
-      user: {
-        name,
-        email,
-        id: newUser.id,
-      },
-    });
+    return response.json({ token, user: { name, email, id: newUser.id } });
   },
 
   async singIn(request, response) {
@@ -68,10 +54,7 @@ module.exports = {
 
     if (!emailRegistered) {
       return response.json({
-        validation: {
-          field: "email",
-          message: "Email inexistente",
-        },
+        validation: { field: "email", message: "Email inexistente" },
       });
     }
 
@@ -79,10 +62,7 @@ module.exports = {
 
     if (!samePassword) {
       return response.json({
-        validation: {
-          field: "password",
-          message: "Senha inválida",
-        },
+        validation: { field: "password", message: "Senha inválida" },
       });
     }
 
@@ -100,7 +80,7 @@ module.exports = {
     });
   },
 
-  async forgotPassword(request, response) {
+  async sendEmailToResetPassword(request, response) {
     const { email } = request.body;
 
     const emailRegistered = await Users.findOne({
@@ -109,10 +89,7 @@ module.exports = {
 
     if (!emailRegistered) {
       return response.json({
-        validation: {
-          field: "email",
-          message: "Email inexistente",
-        },
+        validation: { field: "email", message: "Email inexistente" },
       });
     }
 
@@ -123,7 +100,7 @@ module.exports = {
 
     const responseEmail = await sendEmail(
       userToken,
-      request.body,
+      email,
       emailRegistered.name
     );
 
@@ -144,10 +121,7 @@ module.exports = {
 
     if (userRegistered && userRegistered.timeExpired < new Date())
       return response.json({
-        validation: {
-          field: "token",
-          message: "Token expirado",
-        },
+        validation: { field: "token", message: "Token expirado" },
       });
 
     if (userRegistered) {
@@ -165,14 +139,11 @@ module.exports = {
     }
 
     return response.json({
-      validation: {
-        field: "token",
-        message: "Token expirado",
-      },
+      validation: { field: "token", message: "Token expirado" },
     });
   },
 
-  async listUser(request, response) {
+  async fetchUsers(request, response) {
     const findUsers = await Users.findAll({
       attributes: ["id", "name", "email", "photo", "photoUrl"],
     });
@@ -180,7 +151,7 @@ module.exports = {
     return response.json(findUsers);
   },
 
-  async fetchSpreaderProfile(request, response) {
+  async fetchProfileData(request, response) {
     const { spreaderEmail: email } = request.params;
 
     const fetchUserProfile = await Users.findOne({
@@ -212,48 +183,36 @@ module.exports = {
     });
   },
 
-  async editUserProfile(request, response) {
+  async updateProfile(request, response) {
     const { userId: id } = request.params;
     const { name, email, password } = request.body;
 
+    const existentEmail = await Users.findOne({
+      where: { email, id: { [Op.ne]: id } },
+    });
+
+    if (existentEmail)
+      return response.json({
+        validation: { field: "email", message: "Email já cadastrado" },
+      });
+
+    const nameAlreadyRegistered = await Users.findOne({
+      where: { name, id: { [Op.ne]: id } },
+    });
+
+    if (nameAlreadyRegistered) {
+      return response.json({
+        validation: { field: "name", message: "Este nome já está em uso." },
+      });
+    }
+
     const userRegistered = await Users.findOne({ where: { id } });
-
-    if (email) {
-      const existentEmail = await Users.findOne({
-        where: { email, id: { [Op.ne]: id } },
-      });
-
-      if (existentEmail)
-        return response.json({
-          validation: {
-            field: "email",
-            message: "Email já cadastrado",
-          },
-        });
-    }
-
-    if (name) {
-      const nameAlreadyRegistered = await Users.findOne({
-        where: { name, id: { [Op.ne]: id } },
-      });
-
-      if (nameAlreadyRegistered) {
-        return response.json({
-          validation: {
-            field: "name",
-            message: "Este nome já está em uso.",
-          },
-        });
-      }
-    }
 
     if (userRegistered) {
       const cryptographedPassword = await bcrypt.hashSync(password, 10);
 
       await Users.update(
-        password
-          ? { ...request.body, password: cryptographedPassword }
-          : { ...request.body },
+        { ...request.body, password: cryptographedPassword },
         { where: { id } }
       );
 
@@ -268,33 +227,32 @@ module.exports = {
         },
       });
     }
-    return response.json({ validation: "Usuário inexistente" });
+
+    return response.json({ validation: "ID de usuário inexistente" });
   },
 
-  async addUserPhoto(request, response) {
+  async updatePhoto(request, response) {
     const { userId: id } = request.params;
 
     const userRegistered = await Users.findByPk(id);
 
-    if (userRegistered) {
-      await Users.update(
-        { photo: (request.file && request.file.filename) || null },
-        { where: { id } }
-      );
-
-      const updatedPhoto = await Users.findByPk(id);
-
-      return response.json({
-        user: {
-          id,
-          name: updatedPhoto.name,
-          email: updatedPhoto.email,
-          photo: updatedPhoto.photoUrl,
-        },
-        message: "Photo updated successfully",
-      });
+    if (!userRegistered) {
+      return response.json({ validation: "ID de usuário inexistente" });
     }
 
-    return response.json({ validation: "Usuário inexistente" });
+    const thumbnail = request.file && request.file.filename;
+    await Users.update({ photo: thumbnail || null }, { where: { id } });
+
+    const updatedPhoto = await Users.findByPk(id);
+
+    return response.json({
+      user: {
+        id,
+        name: updatedPhoto.name,
+        email: updatedPhoto.email,
+        photo: updatedPhoto.photoUrl,
+      },
+      message: "Foto de perfil atualizada com sucesso",
+    });
   },
 };

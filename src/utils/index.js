@@ -33,7 +33,7 @@ module.exports = {
 
   // Pass expired token and user ID to URL
   // Change LINK to mobile deeplink
-  async sendEmail(expiredToken, { email }, userName) {
+  async sendEmail(expiredToken, recipient, userName) {
     return await nodemailer
       .createTransport({
         service: "gmail",
@@ -43,8 +43,8 @@ module.exports = {
         },
       })
       .sendMail({
-        from: "Equipe Find Me <equipe.findme@gmail.com>",
-        to: email,
+        from: process.env.SENDER,
+        to: recipient,
         subject: "Redifinição de senha",
         html: template(expiredToken, userName),
       })
@@ -60,7 +60,7 @@ module.exports = {
         return {
           command: err.command,
           response: err.response,
-          validation: "Error after sent email",
+          validation: { field: "email", message: "Error after sent email" },
         };
       });
   },
