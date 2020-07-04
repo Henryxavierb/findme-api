@@ -29,6 +29,7 @@ const {
   updateEvent,
   notifyEvent,
   fetchEvents,
+  updateStatusEvent,
   fetchEventsByUser,
   removeEventsBeforeToday,
 } = require("./controllers/EventController");
@@ -56,7 +57,8 @@ routes.get("/user/:spreaderEmail/profile", fetchProfileData);
 // /////////////////////////////////////////////////////////////////////////
 routes.put("/event/:eventId/notify", notifyEvent);
 routes.get("/event/:userId/list/:theme", fetchEventsByUser);
-routes.get("/event/list/:orderBy/:theme/:isToday", fetchEvents);
+routes.put("/event/:userId/status/:eventId", updateStatusEvent);
+routes.get("/event/list/:orderBy/:theme/:isToday/:eventId", fetchEvents);
 
 routes.post("/event/:userId/create", settingImage, createEvent);
 routes.put("/event/:userId/edit/:eventId", settingImage, updateEvent);

@@ -143,24 +143,57 @@ module.exports = {
     });
   },
 
+  async updateStatusEvent(request, response) {
+    const { status } = request.body;
+    const { eventId, userId: user_id } = request.params;
+
+    const fetchEvent = await Events.findOne({
+      where: { id: eventId, user_id },
+    });
+
+    if (!fetchEvent) {
+      return response.json({
+        validation: {
+          params: "eventId",
+          message: "ID de evento ou usuárioinválido",
+        },
+      });
+    }
+
+    await Events.update({ status }, { where: { id: eventId, user_id } });
+    const eventUpdated = await Events.findByPk(eventId);
+
+    return response.json({
+      event: eventUpdated,
+      message: "Atualização do estado do evento atualizado",
+    });
+  },
+
   // ///////////////////////////////////////////////////////////////////////
   //
   // Filters can be applyed:
   //
   // {
   //   "today": true
+  //   "eventId": null
   //   "theme": "some text...",
   //   "orderBy": "DESC" or "ASC",
   // }
   //
   // //////////////////////////////////////////////////////////////////////
   async fetchEvents(request, response) {
-    const { theme = "", orderBy = "ASC", isToday = false } = request.params;
+    const {
+      eventId,
+      theme = "",
+      orderBy = "ASC",
+      isToday = false,
+    } = request.params;
 
     const beginDate = moment({ hour: 0, minute: 1, second: 0 });
     const endDate = moment({ hour: 23, minute: 59, second: 0 });
 
     const hasFilter = theme !== "null";
+    const filterEvent = eventId !== "null";
     const hasEventToday = isToday !== "false";
 
     const events = await Events.findAll({
@@ -168,7 +201,7 @@ module.exports = {
         beginDate: hasEventToday
           ? { [Op.between]: [beginDate, endDate] }
           : { [Op.not]: null },
-
+        id: filterEvent ? eventId : { [Op.not]: null },
         notify: hasEventToday ? true : { [Op.not]: null },
         theme: hasFilter ? { [Op.iLike]: `%${theme}%` } : { [Op.not]: null },
       },
