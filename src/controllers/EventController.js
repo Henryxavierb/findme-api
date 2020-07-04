@@ -40,7 +40,7 @@ module.exports = {
     if (hasClockShocls) {
       return response.json({
         validation: {
-          field: "representative",
+          field: "spreader",
           message:
             `Representante já possui evento cadastrado entre esses` +
             ` horários`,
@@ -96,7 +96,7 @@ module.exports = {
       if (hasClockShocks)
         return response.json({
           validation: {
-            field: "representative",
+            field: "spreader",
             message:
               `Representante já possui um evento cadastrado entre esses` +
               ` horários`,

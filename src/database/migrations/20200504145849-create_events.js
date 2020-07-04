@@ -26,6 +26,12 @@ module.exports = {
       theme: {
         allowNull: false,
         type: Sequelize.STRING,
+        validate: {
+          len: {
+            args: [10, 1000],
+            msg: "10-1000!",
+          },
+        },
       },
       owner: {
         allowNull: false,
@@ -60,18 +66,42 @@ module.exports = {
       youtube: {
         allowNull: true,
         type: Sequelize.STRING,
+        validate: {
+          len: {
+            args: [10, 1000],
+            msg: "10-1000!",
+          },
+        },
       },
       twitter: {
         allowNull: true,
         type: Sequelize.STRING,
+        validate: {
+          len: {
+            args: [10, 1000],
+            msg: "10-1000!",
+          },
+        },
       },
       linkedin: {
         allowNull: true,
         type: Sequelize.STRING,
+        validate: {
+          len: {
+            args: [10, 1000],
+            msg: "10-1000!",
+          },
+        },
       },
       instagram: {
         allowNull: true,
         type: Sequelize.STRING,
+        validate: {
+          len: {
+            args: [10, 1000],
+            msg: "10-1000!",
+          },
+        },
       },
       created_at: {
         allowNull: false,
