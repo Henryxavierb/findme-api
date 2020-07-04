@@ -69,9 +69,8 @@ module.exports = {
   },
 
   async updateEvent(request, response) {
-    const { eventId } = request.params;
-    const { userId: user_id } = request.params;
     const { beginDate, endDate } = request.body;
+    const { userId: user_id, eventId } = request.params;
 
     const userRegistered = await Users.findByPk(user_id);
 
@@ -105,7 +104,7 @@ module.exports = {
 
       await Events.update(
         { ...request.body, photo: request.file ? request.file.filename : "" },
-        { where: { id, user_id } }
+        { where: { id: eventId, user_id } }
       );
 
       const updatedEvent = await Events.findOne({
