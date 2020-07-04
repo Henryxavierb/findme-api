@@ -69,8 +69,8 @@ module.exports = {
   },
 
   async updateEvent(request, response) {
-    const { beginDate, endDate } = request.body;
     const { userId: user_id, eventId } = request.params;
+    const { beginDate, endDate, photoUrl } = request.body;
 
     const userRegistered = await Users.findByPk(user_id);
 
@@ -86,8 +86,8 @@ module.exports = {
     if (eventRegistered) {
       const hasClockShocks = await Events.findOne({
         where: {
-          user_id,
           id: { [Op.ne]: eventId },
+          user_id: { [Op.ne]: user_id },
           beginDate: { [Op.between]: [beginDate, endDate] },
         },
       });
@@ -102,10 +102,16 @@ module.exports = {
           },
         });
 
-      await Events.update(
-        { ...request.body, photo: request.file ? request.file.filename : "" },
-        { where: { id: eventId, user_id } }
-      );
+      photoUrl && delete request.body.photo;
+
+      const fieldsToUpdate = Boolean(photoUrl)
+        ? request.body
+        : {
+            ...request.body,
+            photo: request.file ? request.file.filename : null,
+          };
+
+      await Events.update(fieldsToUpdate, { where: { id: eventId, user_id } });
 
       const updatedEvent = await Events.findOne({
         where: { id: eventId, user_id },
