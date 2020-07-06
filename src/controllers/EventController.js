@@ -128,19 +128,19 @@ module.exports = {
     });
   },
 
-  async notifyEvent(request, response) {
-    const { notify } = request.body;
-    const { eventId } = request.params;
+  async favoriteEvent(request, response) {
+    const { favorite } = request.body;
+    const { userId, eventId } = request.params;
 
     const fetchEvent = await Events.findByPk(eventId);
 
     if (fetchEvent) {
-      await Events.update({ notify }, { where: { id: eventId } });
+      await Events.update({ notify: favorite }, { where: { id: eventId, user_id: userId } });
       const eventUpdated = await Events.findByPk(eventId);
 
       return response.json({
         event: eventUpdated,
-        message: "Notificação de evento atualizada",
+        message: "Evento favoritado com sucesso",
       });
     }
 
