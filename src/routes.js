@@ -27,8 +27,8 @@ const {
 const {
   createEvent,
   updateEvent,
-  notifyEvent,
   fetchEvents,
+  favoriteEvent,
   updateStatusEvent,
   fetchEventsByUser,
   removeEventsBeforeToday,
@@ -55,8 +55,8 @@ routes.get("/user/:spreaderEmail/profile", fetchProfileData);
 // Event routes
 //
 // /////////////////////////////////////////////////////////////////////////
-routes.put("/event/:eventId/notify", notifyEvent);
 routes.get("/event/:userId/list/:theme", fetchEventsByUser);
+routes.put("/event/:userId/favorite/:eventId", favoriteEvent);
 routes.put("/event/:userId/status/:eventId", updateStatusEvent);
 routes.get("/event/list/:orderBy/:theme/:isToday/:eventId", fetchEvents);
 
