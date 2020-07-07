@@ -13,6 +13,7 @@ module.exports = {
       beginDate,
       status = true,
       notify = false,
+      isExpired = false,
       ...othersFields
     } = request.body;
 
@@ -58,6 +59,7 @@ module.exports = {
       user_id,
       endDate,
       beginDate,
+      isExpired,
       photo: request.file ? request.file.filename : "",
       ...othersFields,
     });
@@ -135,7 +137,10 @@ module.exports = {
     const fetchEvent = await Events.findByPk(eventId);
 
     if (fetchEvent) {
-      await Events.update({ notify: favorite }, { where: { id: eventId, user_id: userId } });
+      await Events.update(
+        { notify: favorite },
+        { where: { id: eventId, user_id: userId } }
+      );
       const eventUpdated = await Events.findByPk(eventId);
 
       return response.json({
@@ -236,10 +241,16 @@ module.exports = {
     return response.json(events);
   },
 
-  async removeEventsBeforeToday(request, response) {
-    await Events.destroy({
-      where: { beginDate: { [Op.lt]: moment().subtract("days", 1) } },
-    });
+  async updateExpiredEventsToDoneStatus(request, response) {
+    await Events.update(
+      { is_expired: true },
+      {
+        where: {
+          status: true,
+          beginDate: { [Op.lt]: moment().subtract("days", 1) },
+        },
+      }
+    );
 
     return response.json({ message: "Evento(s) excluido com sucesso" });
   },

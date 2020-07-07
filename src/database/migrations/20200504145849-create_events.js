@@ -19,6 +19,10 @@ module.exports = {
         allowNull: false,
         type: Sequelize.BOOLEAN,
       },
+      is_expired: {
+        allowNull: false,
+        type: Sequelize.BOOLEAN,
+      },
       notify: {
         allowNull: false,
         type: Sequelize.BOOLEAN,

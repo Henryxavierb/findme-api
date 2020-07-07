@@ -24,6 +24,7 @@ class Event extends Model {
         beginDate: DataTypes.DATE,
         linkedin: DataTypes.STRING,
         instagram: DataTypes.STRING,
+        isExpired: DataTypes.BOOLEAN,
         description: DataTypes.STRING,
       },
       { sequelize: connection }

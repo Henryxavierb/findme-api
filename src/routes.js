@@ -31,7 +31,7 @@ const {
   favoriteEvent,
   updateStatusEvent,
   fetchEventsByUser,
-  removeEventsBeforeToday,
+  updateExpiredEventsToDoneStatus,
 } = require("./controllers/EventController");
 
 // /////////////////////////////////////////////////////////////////////////
@@ -60,9 +60,8 @@ routes.put("/event/:userId/favorite/:eventId", favoriteEvent);
 routes.put("/event/:userId/status/:eventId", updateStatusEvent);
 routes.get("/event/list/:orderBy/:theme/:isToday/:eventId", fetchEvents);
 
+routes.put("/event/done", updateExpiredEventsToDoneStatus);
 routes.post("/event/:userId/create", settingImage, createEvent);
 routes.put("/event/:userId/edit/:eventId", settingImage, updateEvent);
-
-routes.delete("/event/delete", removeEventsBeforeToday);
 
 module.exports = routes;
