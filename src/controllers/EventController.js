@@ -242,16 +242,18 @@ module.exports = {
   },
 
   async updateExpiredEventsToDoneStatus(request, response) {
+    const { isExpired = true } = request.body;
+
     await Events.update(
-      { is_expired: true },
+      { isExpired },
       {
         where: {
           status: true,
-          beginDate: { [Op.lt]: moment().subtract("days", 1) },
+          endDate: { [Op.lt]: moment().subtract(1, "days") },
         },
       }
     );
 
-    return response.json({ message: "Evento(s) excluido com sucesso" });
+    return response.json({ message: "Evento concluído com sucesso" });
   },
 };
