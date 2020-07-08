@@ -234,8 +234,13 @@ module.exports = {
       });
     }
 
+    const hasFilter = theme !== "null";
+
     const events = await Events.findAll({
-      where: { user_id, theme: { [Op.iLike]: `%${theme}%` } },
+      where: {
+        user_id,
+        theme: hasFilter ? { [Op.iLike]: `%${theme}%` } : { [Op.not]: null },
+      },
     });
 
     return response.json(events);
