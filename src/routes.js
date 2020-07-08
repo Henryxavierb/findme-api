@@ -58,7 +58,7 @@ routes.get("/user/:spreaderEmail/profile", fetchProfileData);
 routes.get("/event/:userId/list/:theme", fetchEventsByUser);
 routes.put("/event/:userId/favorite/:eventId", favoriteEvent);
 routes.put("/event/:userId/status/:eventId", updateStatusEvent);
-routes.get("/event/list/:orderBy/:theme/:isToday/:eventId", fetchEvents);
+routes.get("/event/list/:orderBy/:theme/:favorited/:eventId", fetchEvents);
 
 routes.put("/event/done", updateExpiredEventsToDoneStatus);
 routes.post("/event/:userId/create", settingImage, createEvent);

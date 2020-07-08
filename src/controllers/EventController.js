@@ -197,23 +197,16 @@ module.exports = {
       eventId,
       theme = "",
       orderBy = "ASC",
-      isToday = false,
+      favorited = false,
     } = request.params;
-
-    const beginDate = moment({ hour: 0, minute: 1, second: 0 });
-    const endDate = moment({ hour: 23, minute: 59, second: 0 });
 
     const hasFilter = theme !== "null";
     const filterEvent = eventId !== "null";
-    const hasEventToday = isToday !== "false";
 
     const events = await Events.findAll({
       where: {
-        beginDate: hasEventToday
-          ? { [Op.between]: [beginDate, endDate] }
-          : { [Op.not]: null },
+        notify: favorited ? true : { [Op.not]: null },
         id: filterEvent ? eventId : { [Op.not]: null },
-        notify: hasEventToday ? true : { [Op.not]: null },
         theme: hasFilter ? { [Op.iLike]: `%${theme}%` } : { [Op.not]: null },
       },
       order: [["beginDate", orderBy]],
