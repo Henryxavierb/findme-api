@@ -205,8 +205,8 @@ module.exports = {
 
     const events = await Events.findAll({
       where: {
-        notify: favorited ? true : { [Op.not]: null },
         id: filterEvent ? eventId : { [Op.not]: null },
+        notify: favorited === true ? true : { [Op.not]: null },
         theme: hasFilter ? { [Op.iLike]: `%${theme}%` } : { [Op.not]: null },
       },
       order: [["beginDate", orderBy]],
