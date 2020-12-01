@@ -89,7 +89,7 @@ module.exports = {
   
     if (!findUserById) {
       return response.json({
-        validation: { field: "email", message: "Email inexistente" },
+        validation: { field: "id", message: "Usuário inexistente" },
       });
     }
   
