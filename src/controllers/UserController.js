@@ -79,6 +79,22 @@ module.exports = {
       },
     });
   },
+  
+  async syncUserData(request, response) {
+    const { userId } = request.params;
+  
+    const findUserById = await Users.findOne({
+      where: { id: userId },
+    });
+  
+    if (!findUserById) {
+      return response.json({
+        validation: { field: "email", message: "Email inexistente" },
+      });
+    }
+  
+    return response.json({ user: findUserById });
+  },
 
   async sendEmailToResetPassword(request, response) {
     const { email } = request.body;

@@ -18,6 +18,7 @@ const {
   singUp,
   fetchUsers,
   updatePhoto,
+  syncUserData,
   updateProfile,
   resetPassword,
   fetchProfileData,
@@ -46,6 +47,7 @@ routes.post("/user/password/new", resetPassword);
 routes.post("/user/password/forgot", sendEmailToResetPassword);
 
 // routes.use(tokkenAuthorization);
+routes.get("/user/:userId/detail", syncUserData);
 routes.put("/user/:userId/profile", updateProfile);
 routes.put("/user/:userId/photo", settingImage, updatePhoto);
 routes.get("/user/:spreaderEmail/profile", fetchProfileData);
