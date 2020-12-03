@@ -117,7 +117,7 @@ module.exports = {
 
      await Events.findOne({ where: { id: eventId, user_id } });
      
-     const newEvent = await Events.findOne({
+     const newEvent = await Events.findAll({
        where: { id: eventId, user_id },
        include: [{ as: "user", model: Users, attributes: ["email"] }]
      });
