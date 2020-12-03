@@ -115,16 +115,10 @@ module.exports = {
 
       await Events.update(fieldsToUpdate, { where: { id: eventId, user_id } });
 
-      const updatedEvent = await Events.findOne({
-        where: { id: eventId, user_id },
-      });
-      
-      const spreaderEmail = await Users.findOne({ where: updatedEvent.user_id, attributes: ['email'] });
+     await Events.findOne({ where: { id: eventId, user_id } });
+     const event = await Events.findOne({ where: { id: eventId, user_id } });
 
-      return response.json({
-        ...{...updatedEvent, user: { email: {spreaderEmail}} },
-        message: "Evento atualizado com sucesso",
-      });
+      return response.json({ event, message: "Evento atualizado com sucesso" });
     }
 
     return response.json({
