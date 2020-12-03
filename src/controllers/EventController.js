@@ -118,9 +118,11 @@ module.exports = {
       const updatedEvent = await Events.findOne({
         where: { id: eventId, user_id },
       });
+      
+      const spreaderEmail = await Users.findByPk(updatedEvent.user_id, { attributes: ['email'] });
 
       return response.json({
-        updatedEvent,
+        ...{...updatedEvent, user: { email: {spreaderEmail}} },
         message: "Evento atualizado com sucesso",
       });
     }
