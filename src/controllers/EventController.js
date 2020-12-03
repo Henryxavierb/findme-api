@@ -93,7 +93,7 @@ module.exports = {
           beginDate: { [Op.between]: [beginDate, endDate] },
         },
       });
-  
+
       if (hasClockShocks)
         return response.json({
           validation: {
@@ -103,19 +103,19 @@ module.exports = {
               ` horários`,
           },
         });
-  
+
       photoUrl && delete request.body.photo;
-  
+
       const fieldsToUpdate = Boolean(photoUrl)
         ? request.body
         : {
           ...request.body,
           photo: request.file ? request.file.filename : null,
         };
-  
+
       await Events.update(fieldsToUpdate, { where: { id: eventId, user_id } });
       
-      const newEvent = await Events.findAll({
+      const newEvent = await Events.findOne({
         where: { id: eventId, user_id },
         include: [{ as: "user", model: Users, attributes: ["email"] }],
       });
@@ -195,7 +195,7 @@ module.exports = {
       eventId,
       theme = "",
       orderBy = "ASC",
-      favorited = false,
+      favorite = false,
     } = request.params;
 
     const hasFilter = theme !== "null";
@@ -204,10 +204,10 @@ module.exports = {
     const events = await Events.findAll({
       where: {
         id: filterEvent ? eventId : { [Op.not]: null },
-        notify: favorited === true ? true : { [Op.not]: null },
+        notify: favorite === true ? true : { [Op.not]: null },
         theme: hasFilter ? { [Op.iLike]: `%${theme}%` } : { [Op.not]: null },
       },
-      order: [["beginDate", orderBy]],
+      order: [["beginDate", 'ASC']],
       include: [{ as: "user", model: Users, attributes: ["email"] }],
     });
 
