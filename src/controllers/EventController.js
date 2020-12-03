@@ -93,7 +93,7 @@ module.exports = {
           beginDate: { [Op.between]: [beginDate, endDate] },
         },
       });
-
+  
       if (hasClockShocks)
         return response.json({
           validation: {
@@ -103,25 +103,23 @@ module.exports = {
               ` horários`,
           },
         });
-
+  
       photoUrl && delete request.body.photo;
-
+  
       const fieldsToUpdate = Boolean(photoUrl)
         ? request.body
         : {
-            ...request.body,
-            photo: request.file ? request.file.filename : null,
-          };
-
+          ...request.body,
+          photo: request.file ? request.file.filename : null,
+        };
+  
       await Events.update(fieldsToUpdate, { where: { id: eventId, user_id } });
-
-     await Events.findOne({ where: { id: eventId, user_id } });
-     
-     const newEvent = await Events.findAll({
-       where: { id: eventId, user_id },
-       include: [{ as: "user", model: Users, attributes: ["email"] }]
-     });
-
+      
+      const newEvent = await Events.findAll({
+        where: { id: eventId, user_id },
+        include: [{ as: "user", model: Users, attributes: ["email"] }],
+      });
+  
       return response.json({ event: newEvent, message: "Evento atualizado com sucesso" });
     }
 
