@@ -170,7 +170,7 @@ module.exports = {
     }
 
     await Events.update({ status }, { where: { id: eventId, user_id } });
-    const eventUpdated = await Events.findByPk(eventId);
+    const eventUpdated = await Events.findByPk(eventId, { include: [{ as: "user", model: Users, attributes: ["email"] }]});
 
     return response.json({
       event: eventUpdated,
