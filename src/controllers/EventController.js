@@ -117,12 +117,12 @@ module.exports = {
 
      await Events.findOne({ where: { id: eventId, user_id } });
      
-     const event = await Events.findOne({
+     const newEvent = await Events.findOne({
        where: { id: eventId, user_id },
        include: [{ as: "user", model: Users, attributes: ["email"] }]
      });
 
-      return response.json({ event, message: "Evento atualizado com sucesso" });
+      return response.json({ event: newEvent, message: "Evento atualizado com sucesso" });
     }
 
     return response.json({
