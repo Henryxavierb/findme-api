@@ -184,11 +184,12 @@ module.exports = {
   },
   
   async fetchEvents(request, response) {
-    const { eventId, favorite = false, orderBy = 'ASC', theme } = request.query;
+    const { eventId, userId, favorite = false, orderBy = 'ASC', theme } = request.query;
 
     const events = await Events.findAll({
       where: {
         id: eventId || { [Op.not]: null },
+        user_id: userId || { [Op.not] : null },
         notify: favorite || { [Op.not]: null },
         theme: theme ? { [Op.iLike]: `%${theme}%` } : { [Op.not]: null },
       },
