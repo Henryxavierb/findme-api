@@ -182,37 +182,17 @@ module.exports = {
       message: "Atualização do estado do evento atualizado",
     });
   },
-
-  // ///////////////////////////////////////////////////////////////////////
-  //
-  // Filters can be applyed:
-  //
-  // {
-  //   "today": true
-  //   "eventId": null
-  //   "theme": "some text...",
-  //   "orderBy": "DESC" or "ASC",
-  // }
-  //
-  // //////////////////////////////////////////////////////////////////////
+  
   async fetchEvents(request, response) {
-    const {
-      eventId,
-      theme = "",
-      orderBy = "ASC",
-      favorite = false,
-    } = request.params;
-
-    const hasFilter = theme !== "null";
-    const filterEvent = eventId !== "null";
+    const { eventId, favorite = false, orderBy = 'ASC', theme } = request.query;
 
     const events = await Events.findAll({
       where: {
-        id: filterEvent ? eventId : { [Op.not]: null },
-        notify: favorite === true ? true : { [Op.not]: null },
-        theme: hasFilter ? { [Op.iLike]: `%${theme}%` } : { [Op.not]: null },
+        id: eventId || { [Op.not]: null },
+        notify: favorite || { [Op.not]: null },
+        theme: theme ? { [Op.iLike]: `%${theme}%` } : { [Op.not]: null },
       },
-      order: [["beginDate", 'ASC']],
+      order: [["beginDate", orderBy]],
       include: [{ as: "user", model: Users, attributes: ["email"] }],
     });
 
