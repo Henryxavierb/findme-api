@@ -51,7 +51,7 @@ module.exports = {
 
     const id = crypto.randomBytes(8).toString("hex");
 
-    const createEvent = await Events.create({
+    await Events.create({
       id,
       owner,
       status,
@@ -63,9 +63,14 @@ module.exports = {
       photo: request.file ? request.file.filename : "",
       ...othersFields,
     });
+  
+    const newEvent = await Events.findOne({
+      where: { id: id, user_id },
+      include: [{ as: "user", model: Users, attributes: ["email"] }],
+    });
 
     return response.json({
-      event: createEvent,
+      event: newEvent,
       message: "Evento cadastrado com sucesso",
     });
   },
@@ -115,12 +120,12 @@ module.exports = {
 
       await Events.update(fieldsToUpdate, { where: { id: eventId, user_id } });
       
-      const newEvent = await Events.findOne({
+      const updatedEvent = await Events.findOne({
         where: { id: eventId, user_id },
         include: [{ as: "user", model: Users, attributes: ["email"] }],
       });
   
-      return response.json({ event: newEvent, message: "Evento atualizado com sucesso" });
+      return response.json({ event: updatedEvent, message: "Evento atualizado com sucesso" });
     }
 
     return response.json({
