@@ -193,7 +193,7 @@ module.exports = {
         notify: favorite || { [Op.not]: null },
         theme: theme ? { [Op.iLike]: `%${theme}%` } : { [Op.not]: null },
       },
-      order: [["beginDate", orderBy]],
+      order: [["beginDate", orderBy], ['status', true]],
       include: [{ as: "user", model: Users, attributes: ["email"] }],
     });
 
