@@ -36,7 +36,8 @@ module.exports = {
   async sendEmail(expiredToken, recipient, userName) {
     return await nodemailer
       .createTransport({
-        service: "gmail",
+        service: process.env.EMAIL_SERVICE,
+        port: process.env.EMAIL_SERVICE_PORT,
         auth: {
           user: process.env.EMAIL,
           pass: process.env.PASSWORD,
