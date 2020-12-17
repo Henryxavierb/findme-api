@@ -38,7 +38,7 @@ module.exports = {
             <p>${expiredToken}</p>
           </div>
           
-          <a href="https://findme/ResetPassword" style="margin: 0 50px">
+          <a href="https://findme-reset-password.vercel.app/" style="margin: 0 50px">
             Redefinir senha
           </a>
   
