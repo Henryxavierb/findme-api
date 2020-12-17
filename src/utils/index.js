@@ -39,6 +39,7 @@ module.exports = {
         service: process.env.EMAIL_SERVICE,
         port: process.env.EMAIL_SERVICE_PORT,
         secure: false,
+        requireTLS: true,
         auth: {
           user: process.env.EMAIL,
           pass: process.env.PASSWORD,
