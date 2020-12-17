@@ -38,6 +38,7 @@ module.exports = {
       .createTransport({
         service: process.env.EMAIL_SERVICE,
         port: process.env.EMAIL_SERVICE_PORT,
+        secure: false,
         auth: {
           user: process.env.EMAIL,
           pass: process.env.PASSWORD,
