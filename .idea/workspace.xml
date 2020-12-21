@@ -33,10 +33,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="95d1029d-c39a-4859-8c89-d981c7c35153" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/controllers/EventController.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/controllers/EventController.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/routes.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/routes.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/controllers/UserController.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/controllers/UserController.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/utils/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/index.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -53,6 +54,7 @@
   </component>
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="nodejs_package_manager_path" value="yarn" />
@@ -83,6 +85,14 @@
       <workItem from="1607024920016" duration="114000" />
       <workItem from="1608091819759" duration="134000" />
       <workItem from="1608156344148" duration="989000" />
+      <workItem from="1608163057912" duration="92000" />
+      <workItem from="1608163226942" duration="538000" />
+      <workItem from="1608164580716" duration="6000" />
+      <workItem from="1608170405284" duration="3446000" />
+      <workItem from="1608214957553" duration="3000" />
+      <workItem from="1608578596429" duration="36000" />
+      <workItem from="1608578800529" duration="8000" />
+      <workItem from="1608579273785" duration="45000" />
     </task>
     <task id="LOCAL-00001" summary="refactor: change validation text">
       <created>1606797335605</created>
@@ -161,7 +171,21 @@
       <option name="project" value="LOCAL" />
       <updated>1608091945228</updated>
     </task>
-    <option name="localTasksCounter" value="12" />
+    <task id="LOCAL-00012" summary="chore: add filter by user id">
+      <created>1608162668042</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1608162668042</updated>
+    </task>
+    <task id="LOCAL-00013" summary="fix: sent email service">
+      <created>1608173927939</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1608173927939</updated>
+    </task>
+    <option name="localTasksCounter" value="14" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -180,6 +204,7 @@
     <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="VcsManagerConfiguration">
+    <option name="CHECK_CODE_CLEANUP_BEFORE_PROJECT_COMMIT" value="true" />
     <MESSAGE value="refactor: change validation text" />
     <MESSAGE value="sent spreader email when update event" />
     <MESSAGE value="fix: sent spreader email" />
@@ -187,6 +212,10 @@
     <MESSAGE value="update" />
     <MESSAGE value="retorn user email" />
     <MESSAGE value="chore: change route from params to query" />
-    <option name="LAST_COMMIT_MESSAGE" value="chore: change route from params to query" />
+    <MESSAGE value="chore: add filter by user id" />
+    <MESSAGE value="chore: order events by status" />
+    <MESSAGE value="chore: update web app link" />
+    <MESSAGE value="fix: sent email service" />
+    <option name="LAST_COMMIT_MESSAGE" value="fix: sent email service" />
   </component>
 </project>

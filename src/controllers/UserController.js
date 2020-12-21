@@ -85,6 +85,7 @@ module.exports = {
   
     const findUserById = await Users.findOne({
       where: { id: userId },
+      attributes: ['email', 'id', 'name', 'photoUrl']
     });
   
     if (!findUserById) {
