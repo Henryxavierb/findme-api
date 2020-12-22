@@ -31,17 +31,11 @@ module.exports = {
     
           <p style="margin: 10px 50px 20px">
             Caso você não tenha desejado redefinir sua senha, apenas ignore este email.
-          </p>       
-    
-          <div style="margin: 10px 50px 20px">
-            <p style="font-weight: bold">Copie o seguinte token para redefinir sua senha:</p>
-            <p>${expiredToken}</p>
-          </div>
+          </p>
           
-          <a href="https://findme-reset-password.vercel.app/" style="margin: 0 50px">
+          <a href="https://findme-reset-password.vercel.app/?access_token=${expiredToken}" style="margin: 0 50px">
             Redefinir senha
           </a>
-  
         </div>
       </body>
     </html>
