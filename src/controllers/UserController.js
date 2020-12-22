@@ -121,10 +121,10 @@ module.exports = {
       emailRegistered.name
     );
 
-    await Users.update(
-      { expiredToken: userToken, timeExpired },
-      { where: { email } }
-    );
+    // await Users.update(
+    //   { expiredToken: userToken, timeExpired },
+    //   { where: { email } }
+    // );
 
     return response.json(responseEmail);
   },

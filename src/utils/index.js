@@ -1,8 +1,8 @@
 require("dotenv").config();
 const moment = require("moment");
 const jwt = require("jsonwebtoken");
+const sgMailer = require('@sendgrid/mail');
 const { template } = require("./template");
-const nodemailer = require("nodemailer");
 
 module.exports = {
   validateDate(endDate, beginDate) {
@@ -34,37 +34,13 @@ module.exports = {
   // Pass expired token and user ID to URL
   // Change LINK to mobile deeplink
   async sendEmail(expiredToken, recipient, userName) {
-    return await nodemailer
-      .createTransport({
-        host: process.env.EMAIL_SERVICE,
-        port: process.env.EMAIL_SERVICE_PORT,
-        secure: false,
-        requireTLS: true,
-        auth: {
-          user: process.env.EMAIL,
-          pass: process.env.PASSWORD,
-        },
-      })
-      .sendMail({
-        from: process.env.SENDER,
-        to: recipient,
-        subject: "Redifinição de senha",
-        html: template(expiredToken, userName),
-      })
-      .then((response) => {
-        return {
-          accepted: response.accepted,
-          rejected: response.rejected,
-          envelope: response.envelope,
-          message: "Email sent successfully",
-        };
-      })
-      .catch((err) => {
-        return {
-          command: err.command,
-          response: err.response,
-          validation: { field: "email", message: "Error after sent email" },
-        };
-      });
+    sgMailer.setApiKey(process.env.SENDGRID_API_KEY)
+    
+    return sgMailer.send({
+      to: recipient,
+      from: process.env.SENDER,
+      subject: 'Redefinição de senha',
+      html: template(expiredToken, userName)
+    }, err => err)
   },
 };
