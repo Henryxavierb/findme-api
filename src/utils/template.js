@@ -33,7 +33,7 @@ module.exports = {
             Caso você não tenha desejado redefinir sua senha, apenas ignore este email.
           </p>
           
-          <a href="https://findme-reset-password.vercel.app/?access_token=${expiredToken}" style="margin: 0 50px">
+          <a href="https://findme-reset-password-ednipaof5.vercel.app/?access_token=${expiredToken}" style="margin: 0 50px">
             Redefinir senha
           </a>
         </div>

@@ -34,6 +34,7 @@
   <component name="ChangeListManager">
     <list default="true" id="95d1029d-c39a-4859-8c89-d981c7c35153" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/controllers/UserController.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/controllers/UserController.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/utils/template.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/template.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -96,7 +97,9 @@
       <workItem from="1608579553169" duration="26000" />
       <workItem from="1608599339045" duration="2140000" />
       <workItem from="1608602962985" duration="438000" />
-      <workItem from="1608604480706" duration="62000" />
+      <workItem from="1608604480706" duration="202000" />
+      <workItem from="1608700677734" duration="150000" />
+      <workItem from="1608701381227" duration="113000" />
     </task>
     <task id="LOCAL-00001" summary="refactor: change validation text">
       <created>1606797335605</created>

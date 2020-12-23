@@ -102,6 +102,7 @@ module.exports = {
 
     const emailRegistered = await Users.findOne({
       where: { email },
+      attributes: ['email', 'name']
     });
 
     if (!emailRegistered) {
@@ -115,18 +116,21 @@ module.exports = {
 
     const userToken = crypto.randomBytes(20).toString("hex");
 
-    const responseEmail = await sendEmail(
-      userToken,
-      email,
-      emailRegistered.name
+    const hasError = await sendEmail(
+      userToken, email,
+      emailRegistered['name']
     );
 
-    // await Users.update(
-    //   { expiredToken: userToken, timeExpired },
-    //   { where: { email } }
-    // );
-
-    return response.json(responseEmail);
+    if(hasError) {
+      return response.json({ message: 'Houve problemas ao enviar o email!'});
+    }
+    
+    await Users.update(
+      { expiredToken: userToken, timeExpired },
+      { where: { email } }
+    );
+    
+    return response.json({ message: 'Email enviado com sucesso!'});
   },
 
   async resetPassword(request, response) {
