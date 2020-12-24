@@ -10,15 +10,38 @@ No começo de sua elaboração foi-se pensado com o propósito de divulgar event
 
 Para trabalhar em conjunto com o frontend foi pensado no interpretador de JavaScript: NodeJS, assim temos a mesma linguagem tanto no frontend, como no backend, facilitando até mesmo a interpretação do código, visto que ambos encontra-se em uma única linguagem.
 
-### Versões
+### Requisitos
 
 - Node 12.18.0
 - Npm 6.14.4
+- Postgres
 
-###Iniciando aplicação
+### Iniciando aplicação
 
 ```
 git clone https://github.com/Henryxavierb/findme-nodejs-api.git
 
 npm install
+
+npx sequelize db:create
+
+npx sequelize db:migrate
+
+yarn start
+```
+
+### Variáveis de ambiente
+```
+  DATABASE
+  DATABASE_HOST
+  DATABASE_USERNAME
+  DATABASE_PASSWORD
+
+  SERVER_PORT
+  ENVIRONMENT
+
+  SENDER_EMAIL
+  SECRET_TO_ACCESS_TOKEN
+
+  SENDGRID_API_KEY
 ```
