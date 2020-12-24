@@ -14,7 +14,7 @@ Para trabalhar em conjunto com o frontend foi pensado no interpretador de JavaSc
 
 - Node 12.18.0
 - Npm 6.14.4
-- Postgres
+- Postgres ^8.0.3
 
 ### Iniciando aplicação
 
