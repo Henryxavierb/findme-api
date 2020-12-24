@@ -13,8 +13,8 @@ const settingImage = upload.single("photo");
 // /////////////////////////////////////////////////////////////////////////
 
 const {
-  singIn,
-  singUp,
+  signIn,
+  signUp,
   fetchUsers,
   updatePhoto,
   syncUserData,
@@ -39,8 +39,8 @@ const {
 // User routes
 //
 // /////////////////////////////////////////////////////////////////////////
-routes.post("/singIn", singIn);
-routes.post("/singUp", singUp);
+routes.post("/signIn", signIn);
+routes.post("/signUp", signUp);
 routes.get("/user/list", fetchUsers);
 routes.post("/user/password/new", resetPassword);
 routes.post("/user/password/forgot", sendEmailToResetPassword);

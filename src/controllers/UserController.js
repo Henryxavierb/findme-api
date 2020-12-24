@@ -7,7 +7,7 @@ const Events = require("../models/Event");
 const { sendEmail, generateToken } = require("../utils/index");
 
 module.exports = {
-  async singUp(request, response) {
+  async signUp(request, response) {
     const { name, email, password } = request.body;
 
     const emailAlreadyRegistered = await Users.findOne({
@@ -45,7 +45,7 @@ module.exports = {
     return response.json({ token, user: { name, email, id: newUser.id } });
   },
 
-  async singIn(request, response) {
+  async signIn(request, response) {
     const { email, password } = request.body;
 
     const emailRegistered = await Users.findOne({
