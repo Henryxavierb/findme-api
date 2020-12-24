@@ -206,7 +206,7 @@ module.exports = {
 
   async updateProfile(request, response) {
     const { userId: id } = request.params;
-    const { name, email, password } = request.body;
+    const { name, email } = request.body;
 
     const existentEmail = await Users.findOne({
       where: { email, id: { [Op.ne]: id } },
@@ -230,13 +230,7 @@ module.exports = {
     const userRegistered = await Users.findOne({ where: { id } });
 
     if (userRegistered) {
-      const cryptographedPassword = await bcrypt.hashSync(password, 10);
-
-      await Users.update(
-        { ...request.body, password: cryptographedPassword },
-        { where: { id } }
-      );
-
+      await Users.update({ ...request.body }, { where: { id } });
       const updatedUser = await Users.findByPk(id);
 
       return response.json({
