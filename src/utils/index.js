@@ -13,7 +13,7 @@ module.exports = {
   },
 
   generateToken(params = {}) {
-    return jwt.sign(params, process.env.SECRET);
+    return jwt.sign(params, process.env.SECRET_TO_ACCESS_TOKEN);
   },
 
   tokkenAuthorization(request, response, next) {
@@ -23,7 +23,7 @@ module.exports = {
       return response.json({ validation: "No token provided" });
     }
 
-    jwt.verify(authHeader, process.env.SECRET, (err, decoded) => {
+    jwt.verify(authHeader, process.env.SECRET_TO_ACCESS_TOKEN, (err, decoded) => {
       if (err) return response.json({ validation: "Token invalid" });
 
       request.user_id = decoded.id;
@@ -38,7 +38,7 @@ module.exports = {
     
     return sgMailer.send({
       to: recipient,
-      from: process.env.SENDER,
+      from: process.env.SENDER_EMAIL,
       subject: 'Redefinição de senha',
       html: template(expiredToken, userName)
     }, err => err)
