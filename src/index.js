@@ -2,10 +2,7 @@ const express = require("express");
 const routes = require("./routes");
 const cors = require("cors");
 const path = require("path");
-const pg = require('pg');
 require("./database");
-
-pg.defaults.ssl = true
 
 const app = express();
 app.use(cors());
