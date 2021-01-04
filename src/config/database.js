@@ -7,5 +7,5 @@ module.exports = {
   username: process.env.DATABASE_USERNAME,
   password: process.env.DATABASE_PASSWORD,
   define: { timestamp: true, underscored: true },
-  ssl: { rejectUnauthorized: false, require: true },
+  ssl: true,
 };
