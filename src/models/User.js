@@ -11,7 +11,7 @@ class User extends Model {
           type: DataTypes.VIRTUAL,
           get() {
             return this.photo
-              ? `${process.env.DATABASE_URL}/files/${this.photo}`
+              ? `${process.env.APP_URL}/files/${this.photo}`
               : null;
           },
         },
