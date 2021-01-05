@@ -5,7 +5,6 @@ module.exports = {
   dialectOptions: {
     ssl: true
   },
-  url: process.env.DATABASE_URL,
   database: process.env.DATABASE,
   host: process.env.DATABASE_HOST,
   username: process.env.DATABASE_USERNAME,
