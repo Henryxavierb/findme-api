@@ -18,7 +18,7 @@ app.use(function (req, res, next) {
 
 app.use(express.json());
 
-app.use("/files", express.static(path.resolve(__dirname, "uploads")));
+app.use("/files", express.static(path.resolve(__dirname, "..", "uploads")));
 app.use(routes);
 
 module.exports = app;
