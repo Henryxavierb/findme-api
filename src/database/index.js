@@ -5,7 +5,7 @@ const config = require("../config/database");
 const User = require("../models/User");
 const Event = require("../models/Event");
 
-const connection = new Sequelize(`${process.env.DATABASE_URL}`);
+const connection = new Sequelize(config);
 
 // /////////////////////////////////////////////////////////////////////////
 //  Models
