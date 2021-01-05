@@ -6,9 +6,9 @@ module.exports = {
   dialect: "postgres",
   dialectOptions: {
     ssl: true,
-    key: fs.readFileSync(__dirname + '..', 'cert', 'key.pem').toString(),
-    ca: fs.readFileSync(__dirname + '..', 'cert', 'csr.pem').toString(),
-    cert: fs.readFileSync(__dirname + '..', 'cert', 'cert.pem').toString(),
+    ca: fs.readFileSync('src/cert/csr.pem').toString(),
+    key: fs.readFileSync('src/cert/key.pem').toString(),
+    cert: fs.readFileSync('src/cert/cert.pem').toString(),
   },
   database: process.env.DATABASE,
   host: process.env.DATABASE_HOST,
