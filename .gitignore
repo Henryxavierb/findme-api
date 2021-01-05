@@ -4,5 +4,5 @@ package-lock.json
 .idea/
 
 server-*
-uploads/*
-!uploads/.gitkeep
+src/uploads/*
+!src/uploads/.gitkeep
