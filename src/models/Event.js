@@ -1,3 +1,4 @@
+require("dotenv").config();
 const { DataTypes, Model } = require("sequelize");
 
 class Event extends Model {
@@ -12,7 +13,7 @@ class Event extends Model {
           type: DataTypes.VIRTUAL,
           get() {
             return this.photo
-              ? `${process.env.ENVIRONMENT}/files/${this.photo}`
+              ? `${process.env.APP_URL}/files/${this.photo}`
               : null;
           },
         },
