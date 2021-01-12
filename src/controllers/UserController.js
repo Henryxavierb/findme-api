@@ -247,6 +247,7 @@ module.exports = {
   },
 
   async updatePhoto(request, response) {
+    const { photo } = request.body;
     const { userId: id } = request.params;
 
     const userRegistered = await Users.findByPk(id);
@@ -255,8 +256,7 @@ module.exports = {
       return response.json({ validation: "ID de usuário inexistente" });
     }
 
-    const thumbnail = request.file && request.file.filename;
-    await Users.update({ photo: thumbnail || null }, { where: { id } });
+    await Users.update({ photo: photo || null }, { where: { id } });
 
     const updatedPhoto = await Users.findByPk(id);
 
@@ -265,7 +265,7 @@ module.exports = {
         id,
         name: updatedPhoto.name,
         email: updatedPhoto.email,
-        photo: updatedPhoto.photoUrl,
+        photo: updatedPhoto.photo,
       },
       message: "Foto de perfil atualizada com sucesso",
     });

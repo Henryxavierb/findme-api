@@ -53,7 +53,7 @@ module.exports = {
       },
       photo: {
         allowNull: true,
-        type: Sequelize.STRING(1000),
+        type: Sequelize.STRING(100000),
       },
       youtube: {
         allowNull: true,

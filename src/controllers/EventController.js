@@ -9,6 +9,7 @@ module.exports = {
   async createEvent(request, response) {
     const {
       owner,
+      photo,
       endDate,
       beginDate,
       status = true,
@@ -54,13 +55,13 @@ module.exports = {
     await Events.create({
       id,
       owner,
+      photo,
       status,
       notify,
       user_id,
       endDate,
       beginDate,
       isExpired,
-      photo: request.file ? request.file.filename : "",
       ...othersFields,
     });
   
@@ -76,8 +77,8 @@ module.exports = {
   },
 
   async updateEvent(request, response) {
+    const { beginDate, endDate } = request.body;
     const { userId: user_id, eventId } = request.params;
-    const { beginDate, endDate, photoUrl } = request.body;
 
     const userRegistered = await Users.findByPk(user_id);
 
@@ -109,16 +110,7 @@ module.exports = {
           },
         });
 
-      photoUrl && delete request.body.photo;
-
-      const fieldsToUpdate = Boolean(photoUrl)
-        ? request.body
-        : {
-          ...request.body,
-          photo: request.file ? request.file.filename : null,
-        };
-
-      await Events.update(fieldsToUpdate, { where: { id: eventId, user_id } });
+      await Events.update(request.body, { where: { id: eventId, user_id } });
       
       const updatedEvent = await Events.findOne({
         where: { id: eventId, user_id },

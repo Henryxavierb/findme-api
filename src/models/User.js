@@ -8,14 +8,6 @@ class User extends Model {
         name: DataTypes.STRING,
         email: DataTypes.STRING,
         photo: DataTypes.STRING,
-        photoUrl: {
-          type: DataTypes.VIRTUAL,
-          get() {
-            return this.photo
-              ? `${process.env.APP_URL}/files/${this.photo}`
-              : null;
-          },
-        },
         password: DataTypes.STRING,
         expiredToken: DataTypes.STRING,
       },
