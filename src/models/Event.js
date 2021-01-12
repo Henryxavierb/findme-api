@@ -9,14 +9,6 @@ class Event extends Model {
         theme: DataTypes.STRING,
         owner: DataTypes.STRING,
         photo: DataTypes.STRING,
-        photoUrl: {
-          type: DataTypes.VIRTUAL,
-          get() {
-            return this.photo
-              ? `${process.env.APP_URL}/files/${this.photo}`
-              : null;
-          },
-        },
         endDate: DataTypes.DATE,
         status: DataTypes.BOOLEAN,
         notify: DataTypes.BOOLEAN,

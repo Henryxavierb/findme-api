@@ -22,7 +22,7 @@ module.exports = {
       },
       photo: {
         allowNull: true,
-        type: Sequelize.STRING(100000),
+        type: Sequelize.STRING(50000),
       },
       expired_token: {
         allowNull: true,

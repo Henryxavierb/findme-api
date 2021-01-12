@@ -35,11 +35,11 @@ module.exports = {
       });
     }
 
-    const hasClockShocls = await Events.findOne({
+    const hasClockShocks = await Events.findOne({
       where: { owner, beginDate: { [Op.between]: [beginDate, endDate] } },
     });
 
-    if (hasClockShocls) {
+    if (hasClockShocks) {
       return response.json({
         validation: {
           field: "spreader",
@@ -80,6 +80,7 @@ module.exports = {
     const { beginDate, endDate } = request.body;
     const { userId: user_id, eventId } = request.params;
 
+    console.log('request.body: ', request.body);
     const userRegistered = await Users.findByPk(user_id);
 
     if (!userRegistered)
