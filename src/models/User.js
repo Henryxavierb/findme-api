@@ -1,5 +1,4 @@
-require("dotenv").config();
-const { Model, DataTypes } = require("sequelize");
+const {Model, DataTypes} = require('sequelize');
 
 class User extends Model {
   static init(connection) {
@@ -7,19 +6,16 @@ class User extends Model {
       {
         name: DataTypes.STRING,
         email: DataTypes.STRING,
-        photo: DataTypes.STRING,
         password: DataTypes.STRING,
-        expiredToken: DataTypes.STRING,
+        thumbnail: DataTypes.STRING,
+        access_token: DataTypes.STRING,
       },
-      { sequelize: connection }
+      {sequelize: connection},
     );
   }
 
   static associate(models) {
-    this.hasMany(models.Event, {
-      foreignKey: "user_id",
-      as: "events",
-    });
+    this.hasMany(models.Event, {foreignKey: 'user_id', as: 'events'});
   }
 }
 

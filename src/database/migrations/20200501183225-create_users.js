@@ -20,15 +20,15 @@ module.exports = {
         allowNull: false,
         type: Sequelize.STRING,
       },
-      photo: {
+      thumbnail: {
         allowNull: true,
         type: Sequelize.STRING(50000),
       },
-      expired_token: {
+      access_token: {
         allowNull: true,
         type: Sequelize.STRING,
       },
-      time_expired: {
+      expired_time: {
         allowNull: true,
         type: Sequelize.STRING,
       },
