@@ -75,7 +75,7 @@ module.exports = {
         email,
         id: emailRegistered.id,
         name: emailRegistered.name,
-        photo: emailRegistered.photoUrl,
+        photo: emailRegistered.photo,
       },
     });
   },
@@ -85,7 +85,7 @@ module.exports = {
   
     const findUserById = await Users.findOne({
       where: { id: userId },
-      attributes: ['email', 'id', 'name', 'photo', 'photoUrl']
+      attributes: ['email', 'id', 'name', 'photo']
     });
   
     if (!findUserById) {
@@ -166,7 +166,7 @@ module.exports = {
 
   async fetchUsers(request, response) {
     const findUsers = await Users.findAll({
-      attributes: ["id", "name", "email", "photo", "photoUrl"],
+      attributes: ["id", "name", "email", "photo"],
     });
 
     return response.json(findUsers);
@@ -177,7 +177,7 @@ module.exports = {
 
     const fetchUserProfile = await Users.findOne({
       where: { email },
-      attributes: ["id", "name", "email", "photo", "photoUrl"],
+      attributes: ["id", "name", "email", "photo"],
     });
 
     const totalEventDiscloseds = await Events.count({
@@ -238,7 +238,7 @@ module.exports = {
           id,
           name: updatedUser.name,
           email: updatedUser.email,
-          photo: updatedUser.photoUrl,
+          photo: updatedUser.photo,
         },
       });
     }
