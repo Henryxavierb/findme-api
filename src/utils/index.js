@@ -9,7 +9,7 @@ module.exports = {
     const endDateFormat = moment(endDate);
     const beginDateFormat = moment(beginDate);
 
-    return endDateFormat.diff(beginDateFormat, "minutes") >= 1 || false;
+    return endDateFormat.isSameOrBefore(beginDateFormat) || false;
   },
 
   generateToken(params = {}) {
