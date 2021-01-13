@@ -1,5 +1,5 @@
 module.exports = {
-  template(expiredToken, userName) {
+  emailTemplate(expiredToken, userName) {
     return `
     <!DOCTYPE html>
     <html lang="pt-BR">
