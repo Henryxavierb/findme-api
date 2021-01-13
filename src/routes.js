@@ -1,23 +1,16 @@
 const {Router} = require('express');
 const routes = Router();
 
-// /////////////////////////////////////////////////////////////////////////
-//
-// Controllers
-//
-// /////////////////////////////////////////////////////////////////////////
-
 const {
   signIn,
   signUp,
-  fetchUsers,
-  updatePhoto,
-  syncUserData,
-  updateProfile,
-  resetPassword,
-  fetchProfileData,
+  updatePassword,
+  getUserProfile,
+  updateUserProfile,
+  getAboutUserEvents,
+  updateUserThumbnail,
   sendEmailToResetPassword,
-} = require('./controllers/UserController');
+} = require('./controllers/user.js');
 
 const {
   createEvent,
@@ -28,30 +21,29 @@ const {
   updateStatusEvent,
   fetchEventsByUser,
   updateExpiredEventsToDoneStatus,
-} = require('./controllers/EventController');
+} = require('./controllers/event.js');
 
-// /////////////////////////////////////////////////////////////////////////
-//
-// User routes
-//
-// /////////////////////////////////////////////////////////////////////////
-routes.post('/signIn', signIn);
-routes.post('/signUp', signUp);
-routes.get('/user/list', fetchUsers);
-routes.post('/user/password/new', resetPassword);
+/*
+ * Public routes
+ */
+
+routes.post('/session/signIn', signIn);
+routes.post('/session/signUp', signUp);
 routes.post('/user/password/forgot', sendEmailToResetPassword);
 
-// routes.use(tokkenAuthorization);
-routes.get('/user/:userId/detail', syncUserData);
-routes.put('/user/:userId/profile', updateProfile);
-routes.put('/user/:userId/photo', updatePhoto);
-routes.get('/user/:spreaderEmail/profile', fetchProfileData);
+/*
+ * Private routes
+ */
+routes.get('/user/profile', getUserProfile);
+routes.put('/user/thumbnail', updateUserThumbnail);
+routes.post('/user/password/reset', updatePassword);
+routes.get('/user/event/about', getAboutUserEvents);
+routes.put('/user/profile/edit', updateUserProfile);
 
-// /////////////////////////////////////////////////////////////////////////
-//
-// Event routes
-//
-// /////////////////////////////////////////////////////////////////////////
+/*
+ * Missing refactor
+ */
+
 routes.get('/event/list', fetchEvents);
 routes.get('/event/:userId/list/:theme', fetchEventsByUser);
 routes.put('/event/:userId/favorite/:eventId', favoriteEvent);
