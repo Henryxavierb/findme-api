@@ -24,7 +24,7 @@ module.exports = {
     const {name, email, password} = request.body;
 
     try {
-      validateMissingFields([name, email, password]);
+      validateMissingFields({name, email, password});
 
       const emailAlreadyRegistered = await Users.findOne({where: {email}});
 
@@ -62,12 +62,8 @@ module.exports = {
     const {email, password} = request.body;
 
     try {
-      validateMissingFields([email, password]);
-
-      const emailRegistered = await Users.findOne({
-        where: {email},
-        attributes: ['id', 'name', 'email', 'photo'],
-      });
+      validateMissingFields({email, password});
+      const emailRegistered = await Users.findOne({where: {email}});
 
       if (!emailRegistered)
         throw new ProvideException('email', 'Email não encontrado!');
@@ -80,17 +76,17 @@ module.exports = {
       if (!isPasswordMatched)
         throw new ProvideException('password', 'Senha inválida!');
 
-      const isValidStrongPassword = isStrongPassword(password);
-
-      if (!isValidStrongPassword)
-        throw new ProvideException('password', 'Senha vulnerável! Tente uma senha mais forte');
-
       /*
        * ID should be passed as params to validate different tokens
        */
       const token = generateToken({id: emailRegistered.id});
 
-      return response.json({token, user: emailRegistered});
+      const userResponse = await Users.findOne({
+        where: {email},
+        attributes: ['id', 'name', 'email', 'thumbnail'],
+      });
+
+      return response.json({token, user: userResponse});
     } catch ({message, field}) {
       response.json({status: 'error', field, message});
     }
@@ -103,11 +99,11 @@ module.exports = {
     const {userID} = request.query;
 
     try {
-      validateMissingFields([userID]);
+      validateMissingFields({userID});
 
       const findUserById = await Users.findOne({
         where: {id: userID},
-        attributes: ['id', 'name', 'email', 'photo'],
+        attributes: ['id', 'name', 'email', 'thumbnail'],
       });
 
       if (!findUserById)
@@ -126,7 +122,7 @@ module.exports = {
     const {email} = request.body;
 
     try {
-      validateMissingFields([email]);
+      validateMissingFields({email});
 
       const findUserByEmail = await Users.findOne({where: {email}});
 
@@ -146,7 +142,7 @@ module.exports = {
         throw new ProvideException('email', 'Falha ao enviar o email!');
 
       await Users.update(
-        {accessToken, expiredTime},
+        {access_token: accessToken, expiredTime},
         {where: {email}},
       );
 
@@ -174,9 +170,9 @@ module.exports = {
       if (!passwordsMatch)
         throw new ProvideException('confirmPassword', 'Confirmação de senha inválida');
 
-      const isAnValidAccessToken = await Users.findOne({where: {accessToken}});
+      const isAnValidAccessToken = await Users.findOne({where: {access_token: accessToken}});
 
-      if (isAnValidAccessToken)
+      if (!isAnValidAccessToken)
         throw new ProvideException('accessToken', 'accessToken inválido');
 
       if (isAnValidAccessToken.expiredTime < new Date())
@@ -190,7 +186,7 @@ module.exports = {
           accessToken: null,
           password: encryptedPassword,
         },
-        {where: {accessToken}},
+        {where: {access_token: accessToken}},
       );
 
       return response.json({message: 'Senha atualizada com sucesso'});
@@ -206,11 +202,11 @@ module.exports = {
     const {userID} = request.query;
 
     try {
-      validateMissingFields([userID]);
+      validateMissingFields({userID});
 
       const basicUserData = await Users.findOne({
         where: {id: userID},
-        attributes: ['name', 'email', 'photo'],
+        attributes: ['id', 'name', 'email', 'thumbnail'],
       });
 
       if (!basicUserData)
@@ -225,12 +221,10 @@ module.exports = {
       });
 
       return response.json({
-        user: {
-          ...basicUserData,
-          events: {
-            canceled: countCanceledEvents,
-            disclosures: countDisclosuresEvents,
-          },
+        user: basicUserData,
+        event: {
+          canceled: countCanceledEvents,
+          disclosures: countDisclosuresEvents,
         },
       });
     } catch ({field, message}) {
@@ -249,7 +243,7 @@ module.exports = {
     const {name, email} = request.body;
 
     try {
-      validateMissingFields([name, email, userID]);
+      validateMissingFields({name, email, userID});
 
       const emailAlreadyRegistered = await Users.findOne({
         where: {email, id: {[Op.ne]: userID}},
@@ -264,7 +258,7 @@ module.exports = {
         throw new ProvideException('userID', 'userID inválido');
 
       await Users.update({name, email}, {where: {id: userID}});
-      const user = await Users.findByPk(userID, {attributes: ['id', 'name', 'email', 'photo']});
+      const user = await Users.findByPk(userID, {attributes: ['id', 'name', 'email', 'thumbnail']});
 
       return response.json({user});
 
@@ -282,7 +276,7 @@ module.exports = {
     const {thumbnail} = request.body;
 
     try {
-      validateMissingFields([userID, thumbnail]);
+      validateMissingFields({userID, thumbnail});
       const isAnValidUser = await Users.findByPk(userID);
 
       if (!isAnValidUser) {
@@ -290,7 +284,7 @@ module.exports = {
       }
 
       await Users.update({thumbnail: thumbnail || ''}, {where: {id: userID}});
-      const user = await Users.findByPk(userID, {attributes: ['id', 'name', 'email', 'photo']});
+      const user = await Users.findByPk(userID, {attributes: ['id', 'name', 'email', 'thumbnail']});
 
       return response.json({user});
     } catch ({field, message}) {
