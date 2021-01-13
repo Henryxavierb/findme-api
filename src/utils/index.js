@@ -9,7 +9,7 @@ module.exports = {
     const endDateFormat = moment(endDate);
     const beginDateFormat = moment(beginDate);
 
-    return endDateFormat.isSameOrBefore(beginDateFormat) || false;
+    return endDateFormat.isSameOrBefore(beginDateFormat);
   },
 
   generateToken(params = {}) {
