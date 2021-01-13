@@ -78,9 +78,8 @@ module.exports = {
 
   async updateEvent(request, response) {
     const { beginDate, endDate } = request.body;
-    const { userId: user_id, eventId } = request.params;
+    const { userId: user_id, photo, eventId } = request.params;
 
-    console.log('request.body: ', request.body);
     const userRegistered = await Users.findByPk(user_id);
 
     if (!userRegistered)
@@ -111,7 +110,7 @@ module.exports = {
           },
         });
 
-      await Events.update(request.body, { where: { id: eventId, user_id } });
+      await Events.update({...request.body, photo: photo || ''}, { where: { id: eventId, user_id } });
       
       const updatedEvent = await Events.findOne({
         where: { id: eventId, user_id },
