@@ -1,21 +1,14 @@
-const Sequelize = require("sequelize");
-const config = require("../config/database");
+const Sequelize = require('sequelize');
+const databaseConfig = require('./config');
+const UserModel = require('../models/User');
+const EventModel = require('../models/Event');
 
-const User = require("../models/User");
-const Event = require("../models/Event");
+const connection = new Sequelize(databaseConfig);
 
-const connection = new Sequelize(config);
+UserModel.init(connection);
+EventModel.init(connection);
 
-// /////////////////////////////////////////////////////////////////////////
-//  Models
-// /////////////////////////////////////////////////////////////////////////
-User.init(connection);
-Event.init(connection);
-
-// /////////////////////////////////////////////////////////////////////////
-//  Associations
-// /////////////////////////////////////////////////////////////////////////
-User.associate(connection.models);
-Event.associate(connection.models);
+UserModel.associate(connection.models);
+EventModel.associate(connection.models);
 
 module.exports = connection;
