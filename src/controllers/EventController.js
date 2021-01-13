@@ -77,7 +77,7 @@ module.exports = {
   },
 
   async updateEventPhoto(request, response) {
-    const {beginDate, photo, endDate} = request.body;
+    const {photo} = request.body;
     const {userId: user_id, eventId} = request.params;
 
     const userRegistered = await Users.findByPk(user_id);
@@ -91,7 +91,7 @@ module.exports = {
       where: {id: eventId, user_id},
     });
 
-    if (eventRegistered)
+    if (!eventRegistered)
       return response.json({
         validation: {params: 'eventId', message: 'ID de evento inválido'},
       });
