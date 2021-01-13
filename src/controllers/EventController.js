@@ -26,14 +26,14 @@ module.exports = {
         validation: { params: "userId", message: "ID de usuário inválido" },
       });
 
-    if (!validateDate(endDate, beginDate)) {
-      return response.json({
-        validation: {
-          field: "endDate",
-          message: "Data maior que data de inicio",
-        },
-      });
-    }
+    // if (!validateDate(endDate, beginDate)) {
+    //   return response.json({
+    //     validation: {
+    //       field: "endDate",
+    //       message: "Data maior que data de inicio",
+    //     },
+    //   });
+    // }
 
     const hasClockShocks = await Events.findOne({
       where: { owner, beginDate: { [Op.between]: [beginDate, endDate] } },
