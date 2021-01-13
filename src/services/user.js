@@ -7,7 +7,7 @@ module.exports = {
    * Passwords should be compared with encrypted password to prevents security
    * vulnerabilities.
    */
-  matchPassword({comparePassword, password}) {
+  matchPassword({password, comparePassword}) {
     return bcrypt.compareSync(password, comparePassword);
   },
 
@@ -35,10 +35,12 @@ module.exports = {
   },
 
   validateMissingFields(fields) {
-    fields.map(field => {
-      if (!field) {
-        const fieldName = Object.keys({field})[0];
-        throw new ProvideException(`${fieldName}`, `${fieldName} não pode ser vazio`);
+    Object.entries(fields).map(field => {
+      const fieldValue = field.pop();
+      const fieldName = field.shift();
+
+      if (!fieldValue) {
+        throw new ProvideException(fieldName, `${fieldName} não pode ser vazio`);
       }
     });
   },
