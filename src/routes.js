@@ -24,6 +24,7 @@ const {
   updateEvent,
   fetchEvents,
   favoriteEvent,
+  updateEventPhoto,
   updateStatusEvent,
   fetchEventsByUser,
   updateExpiredEventsToDoneStatus,
@@ -56,8 +57,9 @@ routes.get('/event/:userId/list/:theme', fetchEventsByUser);
 routes.put('/event/:userId/favorite/:eventId', favoriteEvent);
 routes.put('/event/:userId/status/:eventId', updateStatusEvent);
 
-routes.put('/event/done', updateExpiredEventsToDoneStatus);
 routes.post('/event/:userId/create', createEvent);
 routes.put('/event/:userId/edit/:eventId', updateEvent);
+routes.put('/event/done', updateExpiredEventsToDoneStatus);
+routes.put('/event/:userId/edit/:eventId/photo', updateEventPhoto);
 
 module.exports = routes;
