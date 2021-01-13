@@ -55,7 +55,7 @@ module.exports = {
     await Events.create({
       id,
       owner,
-      photo,
+      photo: photo || '',
       status,
       notify,
       user_id,
