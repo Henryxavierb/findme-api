@@ -17,10 +17,8 @@ const {
   updateEvent,
   fetchEvents,
   favoriteEvent,
-  updateEventPhoto,
   updateStatusEvent,
-  fetchEventsByUser,
-  updateExpiredEventsToDoneStatus,
+  updateEventThumbnail,
 } = require('./controllers/event.js');
 
 /*
@@ -40,18 +38,11 @@ routes.post('/user/password/reset', updatePassword);
 routes.get('/user/event/about', getAboutUserEvents);
 routes.put('/user/profile/edit', updateUserProfile);
 
-/*
- * Missing refactor
- */
-
 routes.get('/event/list', fetchEvents);
-routes.get('/event/:userId/list/:theme', fetchEventsByUser);
-routes.put('/event/:userId/favorite/:eventId', favoriteEvent);
-routes.put('/event/:userId/status/:eventId', updateStatusEvent);
-
-routes.post('/event/:userId/create', createEvent);
-routes.put('/event/:userId/edit/:eventId', updateEvent);
-routes.put('/event/done', updateExpiredEventsToDoneStatus);
-routes.put('/event/:userId/edit/:eventId/photo', updateEventPhoto);
+routes.put('/event/edit', updateEvent);
+routes.post('/event/create', createEvent);
+routes.put('/event/edit/status', updateStatusEvent);
+routes.put('/event/edit/favoriteEvent', favoriteEvent);
+routes.put('/event/edit/thumbnail', updateEventThumbnail);
 
 module.exports = routes;
