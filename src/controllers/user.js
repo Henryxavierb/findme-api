@@ -50,7 +50,7 @@ module.exports = {
         accessToken: generateToken({id: user.id}),
       });
     } catch ({message, field}) {
-      response.json({status: 'error', field, message});
+      return response.json({status: 'error', field, message});
     }
   },
 
@@ -88,7 +88,7 @@ module.exports = {
 
       return response.json({token, user: userResponse});
     } catch ({message, field}) {
-      response.json({status: 'error', field, message});
+      return response.json({status: 'error', field, message});
     }
   },
 
@@ -111,7 +111,7 @@ module.exports = {
 
       return response.json({user: findUserById});
     } catch ({message, field}) {
-      response.json({status: 'error', field, message});
+      return response.json({status: 'error', field, message});
     }
   },
 
@@ -148,7 +148,7 @@ module.exports = {
 
       return response.json({message: 'Email enviado com sucesso!'});
     } catch ({message, field}) {
-      response.json({status: 'error', field, message});
+      return response.json({status: 'error', field, message});
     }
   },
 
@@ -163,7 +163,7 @@ module.exports = {
     const {password, confirmPassword} = request.body;
 
     try {
-      validateMissingFields([password, confirmPassword, accessToken]);
+      validateMissingFields({password, confirmPassword, accessToken});
 
       const passwordsMatch = matchConfirmPassword(password, confirmPassword);
 
@@ -228,7 +228,7 @@ module.exports = {
         },
       });
     } catch ({field, message}) {
-      response.json({status: 'error', field, message});
+      return response.json({status: 'error', field, message});
     }
   },
 
@@ -263,7 +263,7 @@ module.exports = {
       return response.json({user});
 
     } catch ({field, message}) {
-      response.json({status: 'error', field, message});
+      return response.json({status: 'error', field, message});
     }
   },
 
@@ -288,7 +288,7 @@ module.exports = {
 
       return response.json({user});
     } catch ({field, message}) {
-      response.json({status: 'error', field, message});
+      return response.json({status: 'error', field, message});
     }
   },
 };
