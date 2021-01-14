@@ -1,264 +1,288 @@
-const crypto = require('crypto');
-const moment = require('moment');
 const {Op} = require('sequelize');
 const Users = require('../models/User');
 const Events = require('../models/Event');
-const {validateDate} = require('../utils');
+const ProvideException = require('../utils/provider.exception.js');
+const {validateMissingFields, generateHash} = require('../services/user.js');
+
+const {
+  validateDates,
+  validateLinks,
+  validateOrderByField,
+  updateToDoneExpiredEventList,
+} = require('../services/event.js');
 
 module.exports = {
+  /*
+   * @body link: 'https://example.com/watch...'
+   * @body theme: 'example theme'
+   * @body description: 'example description'
+   * @body representative_user: 'example owner'
+   * @body thumbnail: 'data:image/png;base64,#3@#131adad1...'
+   * @body end_date: '2021-12-30T09:30:56.000Z'
+   * @body start_date: '2021-01-30T09:30:56.000Z'
+   * @body is_available: true
+   * @body is_favorite_event: false
+   * @body is_expired: false
+   * @body youtube: '',
+   * @body twitter: '',
+   * @body linked_in: 'https://linkedin.com/in/example...'
+   * @body instagram: https://instagram.com/example...'
+   *
+   * @query user_id: '#31231ehjha71...'
+   */
   async createEvent(request, response) {
     const {
-      owner,
-      photo,
-      endDate,
-      beginDate,
-      status = true,
-      notify = false,
-      isExpired = false,
+      link,
+      twitter,
+      youtube,
+      linked_in,
+      instagram,
+      end_date,
+      start_date,
+      thumbnail = '',
+      is_expired = false,
+      is_available = true,
+      is_favorite_event = false,
       ...othersFields
     } = request.body;
 
-    const {userId: user_id} = request.params;
-    const userRegistered = await Users.findByPk(user_id);
+    try {
+      const links = {link, youtube, twitter, instagram, linked_in};
 
-    if (!userRegistered)
-      return response.json({
-        validation: {params: 'userId', message: 'ID de usuário inválido'},
+      const {user_id} = request.query;
+      const isAnValidUser = await Users.findByPk(user_id);
+
+      if (!isAnValidUser)
+        throw new ProvideException('user_id', 'user_id inválido');
+
+      validateLinks(links);
+      validateDates(start_date, end_date);
+
+      const event_id = generateHash(8);
+
+      await Events.create({
+        user_id,
+        ...links,
+        end_date,
+        thumbnail,
+        start_date,
+        is_expired,
+        id: event_id,
+        is_available,
+        is_favorite_event,
+        ...othersFields,
       });
 
-    // if (!validateDate(endDate, beginDate)) {
-    //   return response.json({
-    //     validation: {
-    //       field: "endDate",
-    //       message: "Data maior que data de inicio",
-    //     },
-    //   });
-    // }
-
-    const hasClockShocks = await Events.findOne({
-      where: {owner, beginDate: {[Op.between]: [beginDate, endDate]}},
-    });
-
-    if (hasClockShocks) {
-      return response.json({
-        validation: {
-          field: 'spreader',
-          message:
-            `Representante já possui evento cadastrado entre esses` +
-            ` horários`,
-        },
-      });
-    }
-
-    const id = crypto.randomBytes(8).toString('hex');
-
-    await Events.create({
-      id,
-      owner,
-      photo: photo || '',
-      status,
-      notify,
-      user_id,
-      endDate,
-      beginDate,
-      isExpired,
-      ...othersFields,
-    });
-
-    const newEvent = await Events.findOne({
-      where: {id: id, user_id},
-      include: [{as: 'user', model: Users, attributes: ['email']}],
-    });
-
-    return response.json({
-      event: newEvent,
-      message: 'Evento cadastrado com sucesso',
-    });
-  },
-
-  async updateEventPhoto(request, response) {
-    const {photo} = request.body;
-    const {userId: user_id, eventId} = request.params;
-
-    const userRegistered = await Users.findByPk(user_id);
-
-    if (!userRegistered)
-      return response.json({
-        validation: {params: 'userId', message: 'ID de usuário inválido'},
-      });
-
-    const eventRegistered = await Events.findOne({
-      where: {id: eventId, user_id},
-    });
-
-    if (!eventRegistered)
-      return response.json({
-        validation: {params: 'eventId', message: 'ID de evento inválido'},
-      });
-
-    await Events.update({ photo: photo || ''}, {where: {id: eventId, user_id}});
-
-    const updatedEvent = await Events.findOne({
-      where: {id: eventId, user_id},
-      include: [{as: 'user', model: Users, attributes: ['email']}],
-    });
-
-    return response.json({event: updatedEvent, message: 'Evento atualizado com sucesso'});
-  },
-
-  async updateEvent(request, response) {
-    const {beginDate, photo, endDate} = request.body;
-    const {userId: user_id, eventId} = request.params;
-
-    const userRegistered = await Users.findByPk(user_id);
-
-    if (!userRegistered)
-      return response.json({
-        validation: {params: 'userId', message: 'ID de usuário inválido'},
-      });
-
-    const eventRegistered = await Events.findOne({
-      where: {id: eventId, user_id},
-    });
-
-    if (eventRegistered) {
-      const hasClockShocks = await Events.findOne({
-        where: {
-          id: {[Op.ne]: eventId},
-          user_id: {[Op.ne]: user_id},
-          beginDate: {[Op.between]: [beginDate, endDate]},
-        },
-      });
-
-      if (hasClockShocks)
-        return response.json({
-          validation: {
-            field: 'spreader',
-            message:
-              `Representante já possui um evento cadastrado entre esses` +
-              ` horários`,
-          },
-        });
-
-      console.log('photo: ', photo);
-      await Events.update({...request.body, photo: photo || ''}, {where: {id: eventId, user_id}});
-
-      const updatedEvent = await Events.findOne({
-        where: {id: eventId, user_id},
+      const event = await Events.findOne({
+        where: {id: event_id, user_id},
         include: [{as: 'user', model: Users, attributes: ['email']}],
       });
 
-      return response.json({event: updatedEvent, message: 'Evento atualizado com sucesso'});
+      return response.json(event);
+    } catch ({field, message}) {
+      return response.json({status: 'error', field, message});
     }
-
-    return response.json({
-      validation: {params: 'eventId', message: 'ID de evento inválido'},
-    });
   },
 
-  async favoriteEvent(request, response) {
-    const {favorite} = request.body;
-    const {userId, eventId} = request.params;
+  /*
+   * @query user_id: 'Ki1j8123...'
+   * @query event_id: '!#i1j8123...'
+   * @body thumbnail: 'data:image/png;base64,!@#sae1231j...'
+   */
+  async updateEventThumbnail(request, response) {
+    const {thumbnail = ''} = request.body;
+    const {user_id, event_id} = request.query;
 
-    const fetchEvent = await Events.findByPk(eventId);
+    try {
+      validateMissingFields({user_id, event_id});
+      const isAnValidUser = await Events.findOne({where: {user_id}});
 
-    if (fetchEvent) {
-      await Events.update(
-        {notify: favorite},
-        {where: {id: eventId, user_id: userId}},
-      );
-      const eventUpdated = await Events.findByPk(eventId);
+      if (!isAnValidUser)
+        throw new ProvideException('user_id', 'user_id inválido');
 
-      return response.json({
-        event: eventUpdated,
-        message: 'Evento favoritado com sucesso',
+      const isARegisteredEvent = await Events.findOne({
+        where: {id: event_id, user_id},
       });
-    }
 
-    return response.json({
-      validation: {params: 'eventId', message: 'ID de evento inválido'},
-    });
-  },
+      if (!isARegisteredEvent)
+        throw new ProvideException('event_id', 'event_id inválido');
 
-  async updateStatusEvent(request, response) {
-    const {status} = request.body;
-    const {eventId, userId: user_id} = request.params;
+      await Events.update({thumbnail}, {where: {id: event_id, user_id}});
 
-    const fetchEvent = await Events.findOne({
-      where: {id: eventId, user_id},
-    });
-
-    if (!fetchEvent) {
-      return response.json({
-        validation: {
-          params: 'eventId',
-          message: 'ID de evento ou usuárioinválido',
-        },
+      const event = await Events.findOne({
+        where: {id: event_id, user_id},
+        include: [{as: 'user', model: Users, attributes: ['email']}],
       });
+
+      return response.json(event);
+    } catch ({field, message}) {
+      return response.json({status: 'error', field, message});
     }
-
-    await Events.update({status}, {where: {id: eventId, user_id}});
-    const eventUpdated = await Events.findByPk(eventId, {include: [{as: 'user', model: Users, attributes: ['email']}]});
-
-    return response.json({
-      event: eventUpdated,
-      message: 'Atualização do estado do evento atualizado',
-    });
   },
 
-  async fetchEvents(request, response) {
-    const {eventId, userId, favorite = false, orderBy = 'ASC', theme} = request.query;
+  /*
+   * All @body fields used in the create event function, but dont receive thumbnail
+   *
+   * @query user_id: '#31231ehjha71...'
+   * @query event_id: '!8921ehjha71...'
+   */
+  async updateEvent(request, response) {
+    const {
+      link,
+      twitter,
+      youtube,
+      linked_in,
+      instagram,
+      end_date,
+      start_date,
+      is_expired = false,
+      is_available = true,
+      is_favorite_event = false,
+      ...othersFields
+    } = request.body;
 
-    const events = await Events.findAll({
-      where: {
-        id: eventId || {[Op.not]: null},
-        user_id: userId || {[Op.not]: null},
-        notify: favorite || {[Op.not]: null},
-        theme: theme ? {[Op.iLike]: `%${theme}%`} : {[Op.not]: null},
-      },
-      order: [['beginDate', orderBy], ['isExpired', 'DESC']],
-      include: [{as: 'user', model: Users, attributes: ['email']}],
-    });
+    try {
+      const links = {link, youtube, twitter, instagram, linked_in};
 
-    return response.json(events);
-  },
+      const {user_id, event_id} = request.query;
+      const isRegisteredUser = await Users.findByPk(user_id);
 
-  async fetchEventsByUser(request, response) {
-    const {userId: user_id, theme = ''} = request.params;
+      if (!isRegisteredUser)
+        throw new ProvideException('user_id', 'user_id inválido');
 
-    const fetchUser = await Users.findByPk(user_id);
+      const isRegisteredEvent = await Events.findByPk(event_id);
 
-    if (!fetchUser) {
-      return response.json({
-        validation: {params: 'userId', message: 'ID de usuário inválido'},
-      });
-    }
+      if (!isRegisteredEvent)
+        throw new ProvideException('event_id', 'event_id inválido');
 
-    const hasFilter = theme !== 'null';
+      validateLinks(links);
+      validateDates(start_date, end_date);
 
-    const events = await Events.findAll({
-      where: {
+      await Events.update({
         user_id,
-        theme: hasFilter ? {[Op.iLike]: `%${theme}%`} : {[Op.not]: null},
-      },
-    });
+        ...links,
+        end_date,
+        start_date,
+        is_expired,
+        id: event_id,
+        is_available,
+        is_favorite_event,
+        ...othersFields,
+      }, {where: {id: event_id, user_id}});
 
-    return response.json(events);
+      const event = await Events.findOne({
+        where: {id: event_id, user_id},
+        include: [{as: 'user', model: Users, attributes: ['email']}],
+      });
+
+      return response.json(event);
+    } catch ({field, message}) {
+      return response.json({status: 'error', field, message});
+    }
   },
 
-  async updateExpiredEventsToDoneStatus(request, response) {
-    const {isExpired = true} = request.body;
+  /*
+   * @body is_favorite_event: true
+   * @query user_id: '#31231ehjha71...'
+   * @query event_id: '!8921ehjha71...'
+   */
+  async favoriteEvent(request, response) {
+    const {user_id, event_id} = request.query;
+    const {is_favorite_event = false} = request.body;
 
-    await Events.update(
-      {isExpired},
-      {
+    try {
+      validateMissingFields({user_id, event_id, is_favorite_event});
+      const isAnValidUser = await Events.findOne({where: {user_id}});
+
+      if (!isAnValidUser)
+        throw new ProvideException('user_id', 'user_id inválido');
+
+      const isARegisteredEvent = await Events.findOne({
+        where: {id: event_id, user_id},
+      });
+
+      if (!isARegisteredEvent)
+        throw new ProvideException('event_id', 'event_id inválido');
+
+      await Events.update({is_favorite_event}, {where: {id: event_id, user_id}});
+
+      const event = await Events.findOne({
+        where: {id: event_id, user_id},
+        include: [{as: 'user', model: Users, attributes: ['email']}],
+      });
+
+      return response.json(event);
+
+    } catch ({field, message}) {
+      return response.json({status: 'error', field, message});
+    }
+  },
+
+  /*
+   * @body is_available: false
+   * @query user_id: '#31231ehjha71...'
+   * @query event_id: '!8921ehjha71...'
+   */
+  async updateStatusEvent(request, response) {
+    const {user_id, event_id} = request.query;
+    const {is_available = false} = request.body;
+
+    try {
+      validateMissingFields({user_id, event_id, is_available});
+      const isAnValidUser = await Events.findOne({where: {user_id}});
+
+      if (!isAnValidUser)
+        throw new ProvideException('user_id', 'user_id inválido');
+
+      const isARegisteredEvent = await Events.findOne({
+        where: {id: event_id, user_id},
+      });
+
+      if (!isARegisteredEvent)
+        throw new ProvideException('event_id', 'event_id inválido');
+
+      await Events.update({is_available}, {where: {id: event_id, user_id}});
+
+      const event = await Events.findOne({
+        where: {id: event_id, user_id},
+        include: [{as: 'user', model: Users, attributes: ['email']}],
+      });
+
+      return response.json(event);
+
+    } catch ({field, message}) {
+      return response.json({status: 'error', field, message});
+    }
+  },
+
+  /*
+   * @query theme: 'example theme'
+   * @query user_id: '#31231ehjha71...'
+   * @query event_id: '!8921ehjha71...'
+   * @query is_favorite_event: true
+   * @query order_by: 'ASC' | 'DESC'
+   */
+  async fetchEvents(request, response) {
+    const {event_id, user_id, is_favorite_event = false, order_by = 'ASC', theme} = request.query;
+
+    try {
+      validateOrderByField(order_by);
+      await updateToDoneExpiredEventList();
+
+      const events = await Events.findAll({
         where: {
-          status: true,
-          endDate: {[Op.lt]: moment().subtract(1, 'days')},
+          id: event_id || {[Op.not]: null},
+          user_id: user_id || {[Op.not]: null},
+          is_favorite_event: is_favorite_event || {[Op.not]: null},
+          theme: theme ? {[Op.iLike]: `%${theme}%`} : {[Op.not]: null},
         },
-      },
-    );
+        order: [['start_date', order_by], ['is_expired', 'DESC']],
+        include: [{as: 'user', model: Users, attributes: ['email']}],
+      });
 
-    return response.json({message: 'Evento concluído com sucesso'});
+      return response.json(events);
+    } catch ({field, message}) {
+      return response.json({status: 'error', field, message});
+    }
   },
 };
