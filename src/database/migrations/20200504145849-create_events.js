@@ -15,7 +15,7 @@ module.exports = {
         type: Sequelize.STRING,
         references: { model: "users", key: "id" },
       },
-      status: {
+      is_available: {
         allowNull: false,
         type: Sequelize.BOOLEAN,
       },
@@ -23,7 +23,7 @@ module.exports = {
         allowNull: false,
         type: Sequelize.BOOLEAN,
       },
-      notify: {
+      is_favorite_event: {
         allowNull: false,
         type: Sequelize.BOOLEAN,
       },
@@ -31,11 +31,11 @@ module.exports = {
         allowNull: false,
         type: Sequelize.STRING(1000),
       },
-      owner: {
+      representative_user: {
         allowNull: false,
         type: Sequelize.STRING(1000),
       },
-      begin_date: {
+      start_date: {
         allowNull: false,
         type: Sequelize.DATE,
       },
@@ -48,10 +48,10 @@ module.exports = {
         type: Sequelize.STRING(1000),
       },
       description: {
-        allowNull: true,
+        allowNull: false,
         type: Sequelize.STRING(2000),
       },
-      photo: {
+      thumbnail: {
         allowNull: true,
         type: Sequelize.STRING(50000),
       },
@@ -63,7 +63,7 @@ module.exports = {
         allowNull: true,
         type: Sequelize.STRING(1000),
       },
-      linkedin: {
+      linked_in: {
         allowNull: true,
         type: Sequelize.STRING(1000),
       },
