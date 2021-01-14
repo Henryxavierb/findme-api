@@ -39,7 +39,7 @@ module.exports = {
       const fieldValue = field.pop();
       const fieldName = field.shift();
 
-      if (!fieldValue) {
+      if (typeof fieldValue !== 'boolean' && !fieldValue) {
         throw new ProvideException(fieldName, `${fieldName} não pode ser vazio`);
       }
     });
